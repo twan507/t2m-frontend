@@ -1,7 +1,8 @@
-import type { Metadata } from 'next'
+import type { Metadata } from 'next';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import './globals.css'
-import Header from '@/components/header';
+import Header from '@/components/header/header';
+import NextAuthWrapper from '@/lib/next.auth.wrapper';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,10 +15,12 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
     <html lang="en">
       <body>
         <AntdRegistry>
-          <Header />
-          <div>
-            {children}
-          </div>
+          <NextAuthWrapper>
+            <Header />
+            <div>
+              {children}
+            </div>
+          </NextAuthWrapper>
         </AntdRegistry>
       </body>
     </html>

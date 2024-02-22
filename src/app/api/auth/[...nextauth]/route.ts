@@ -23,7 +23,6 @@ export const authOptions: AuthOptions = {
                         password: credentials?.password
                     }
                 })
-                console.log(res)
                 if (res && res.data) {
                     return res.data as any
                 } else {
@@ -33,16 +32,38 @@ export const authOptions: AuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({ token, user, account, profile, trigger }) {
+        jwt({ token, user, account, profile, trigger }) {
+
             if (trigger === 'signIn' && account?.provider === "credentials") {
+
                 //@ts-ignore
                 token.user = user.user
+                //@ts-ignore
+                token.access_token = user.access_token
+
             }
             return token
         },
-        session({ session, token, user }) {
+        //@ts-ignore
+        async session({ session, token, user }) {
+
+            const sessionLimit = await sendRequest<IBackendRes<JWT>>({
+                url: "http://localhost:8000/api/v1/auth/session-limit",
+                method: "POST",
+                body: {
+                    //@ts-ignore
+                    email: token.user.email,
+                    //@ts-ignore
+                    token: token.access_token
+                }
+            })
+
             if (token) {
                 session.user = token.user
+            }
+
+            if (!sessionLimit.data) {
+                return null
             }
             return session
         }

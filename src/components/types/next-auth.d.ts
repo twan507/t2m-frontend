@@ -13,14 +13,14 @@ interface IUser {
 
 declare module 'next-auth' {
     interface Session {
-        tokens: string[];
+        access_token: string;
         user: IUser
     }
 }
 
 declare module "next-auth/jwt" {
     interface JWT {
-        tokens: string[];
+        access_token: string;
         user: IUser
     }
 }

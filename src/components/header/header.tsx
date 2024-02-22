@@ -47,12 +47,36 @@ const items: MenuProps['items'] = [
 ];
 
 const Header: React.FC = () => {
-  
+
   const { data: session } = useSession()
+
+  const items: MenuProps['items'] = [
+    {
+      label: <Link href="/">Home</Link>,
+      key: 'home',
+      icon: <HomeOutlined />,
+    },
+    {
+      label: <Link href="/admin">Admin</Link>,
+      key: 'admin',
+      icon: <UserOutlined />,
+    },
+    session ? {
+      label: <Link href="#" onClick={() => signOut()}>Logout</Link>,
+      key: 'logout',
+      icon: <UserOutlined />,
+    } : {
+      label: <Link href="/auth/signin">Login</Link>,
+      key: 'login',
+      icon: <UserOutlined />,
+    }
+  ];
+
+
   const [current, setCurrent] = useState('mail');
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e);
+    console.log(session)
     setCurrent(e.key);
   };
 

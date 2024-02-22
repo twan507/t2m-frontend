@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import GithubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
 import { sendRequest } from "@/utlis/api";
@@ -35,10 +34,7 @@ export const authOptions: AuthOptions = {
     ],
     callbacks: {
         async jwt({ token, user, account, profile, trigger }) {
-
             if (trigger === 'signIn' && account?.provider === "credentials") {
-                //@ts-ignore
-                token.tokens = user.tokens
                 //@ts-ignore
                 token.user = user.user
             }
@@ -46,7 +42,6 @@ export const authOptions: AuthOptions = {
         },
         session({ session, token, user }) {
             if (token) {
-                session.tokens = token.tokens
                 session.user = token.user
             }
             return session

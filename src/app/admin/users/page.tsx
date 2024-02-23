@@ -1,42 +1,9 @@
 'use client'
-
 import { sendRequest } from "@/utlis/api"
-
-// export default async function PageUsers() {
-
-//   const user_id = "65bc76897e9d32d76d997a48"
-
-//   const res = await sendRequest<IBackendRes<any>>({
-//     url: `http://localhost:8000/api/v1/users?current=1&pageSize=3`,
-//     method: "GET"
-//   })
-
-//   console.log(res)
-
-//   return (
-//     <>
-//       <div> T2M Users </div>
-//       <div> T2M Users </div>
-//       <div> T2M Users </div>
-//       <div> T2M Users </div>
-//       <div> T2M Users </div>
-//       <div> T2M Users </div>
-//     </>
-
-//   )
-// }
-
 import React, { useEffect, useState } from 'react';
-import { Space, Table, Tag } from 'antd';
+import { Table } from 'antd';
 import type { TableProps } from 'antd';
-
-interface DataType {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
-  tags: string[];
-}
+import { useSession } from "next-auth/react";
 
 const columns: TableProps<any>['columns'] = [
   {
@@ -58,7 +25,9 @@ const columns: TableProps<any>['columns'] = [
   },
 ];
 
-const App = () => {
+const PageUsers = () => {
+
+  const { data: session } = useSession()
 
   const [listUsers, setListUsers] = useState([])
 
@@ -66,12 +35,13 @@ const App = () => {
     const getData = async () => {
       const res = await sendRequest<IBackendRes<any>>({
         url: `http://localhost:8000/api/v1/users?current=1&pageSize=3`,
-        method: "GET"
+        method: "GET",
+        headers: { 'Authorization': `Bearer ${session?.access_token}` }
       })
-      setListUsers(res.data.result)
+      try { setListUsers(res.data.result) } catch (error) { }
     }
     getData()
-  }, [])
+  }, [session])
 
   return (
     <>
@@ -84,4 +54,4 @@ const App = () => {
   )
 }
 
-export default App;
+export default PageUsers;

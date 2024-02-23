@@ -3,8 +3,6 @@ import React from 'react';
 import { Button, Form, Input, Row, Col, Divider } from 'antd';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import { useRouter } from "next/navigation";
 
 
 type FieldType = {
@@ -13,7 +11,6 @@ type FieldType = {
 };
 
 const AuthSignIn = () => {
-    const router = useRouter()
     const [form] = Form.useForm();
 
     const onFinish = async () => {
@@ -23,9 +20,8 @@ const AuthSignIn = () => {
             redirect: false
         })
 
-
         if (!res?.error) {
-            router.push("/")
+            window.location.href = "/"
         } else {
             alert(res.error)
         }
@@ -36,14 +32,12 @@ const AuthSignIn = () => {
     };
 
     return (
-        <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
+        <Row justify="center" align="middle" style={{ minHeight: '100%', overflowX: 'hidden' }}>
             <Col xs={22} sm={20} md={15} lg={12} xl={10}
                 style={{
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '100%',
-                    width: '100vw'
                 }}>
                 <Form
                     form={form}
@@ -53,7 +47,6 @@ const AuthSignIn = () => {
                         width: '100%', // Đảm bảo Form chiếm toàn bộ chiều rộng của Col
                         padding: '10px 30px 10px 30px',
                         boxSizing: 'border-box', // Đảm bảo padding và border không làm tăng kích thước tổng thể của Form
-                        marginBottom: '300px',
                         backgroundColor: '#191919',
                         borderRadius: '20px',
                         boxShadow: '0 0 10px 0 black' /* Đổ bóng với độ sâu 2px và màu đen có độ trong suốt 10% */

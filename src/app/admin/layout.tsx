@@ -16,17 +16,20 @@ import Link from 'next/link';
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = ({ children }: React.PropsWithChildren) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
+
+  //@ts-ignore
+  const path = children.props.childProp.segment
 
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
         <Menu
-          style={{ height: '100%', borderRight: 0, background: 'black' }}
+          style={{ height: '100%', borderRight: 0, background: 'black', minHeight: 'calc(100vh - 50px)' }}
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['dashboard']}
+          defaultSelectedKeys={[path]}
           items={[
             {
               label: (
@@ -93,7 +96,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
           style={{
             margin: '24px 16px',
             padding: 24,
-            minHeight: 280,
+            // minHeight: '82vh',
             background: 'white',
             borderRadius: 10,
           }}

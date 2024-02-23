@@ -60,11 +60,16 @@ export const authOptions: AuthOptions = {
 
             if (token) {
                 session.user = token.user
+                session.access_token = token.access_token
             }
+
+            console.log(session.access_token)
+            console.log(sessionLimit)
 
             if (!sessionLimit.data) {
                 return null
             }
+
             return session
         }
     },

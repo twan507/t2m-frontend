@@ -25,12 +25,32 @@ body>div,
 header,
 footer {
   width: 100%;
-  /* Other styles */
 }
 
-.ant-form-item-required::before {
-  display: none;
+
+/* Tùy chỉnh thanh cuộn */
+::-webkit-scrollbar {
+    width: 10px; /* Điều chỉnh độ rộng của thanh cuộn */
+    height: 10px; /* Điều chỉnh độ rộng của thanh cuộn */
 }
+
+/* Đường dẫn của thanh cuộn */
+::-webkit-scrollbar-track {
+    border-radius: 10px; 
+}
+
+/* Bản thân thanh cuộn */
+::-webkit-scrollbar-thumb {
+    background: #888; /* Màu sắc nổi bật cho thanh cuộn */
+    border-radius: 10px; /* Góc bo tròn */
+}
+
+/* Thay đổi màu sắc khi hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Màu sáng hơn khi hover */
+}
+
+
 
 /* :root {
   --max-width: 1100px;

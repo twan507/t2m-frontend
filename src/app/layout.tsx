@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import './globals.css'
-import Header from '@/components/header/header';
 import NextAuthWrapper from '@/lib/next.auth.wrapper';
 
 export const metadata: Metadata = {
@@ -16,7 +15,6 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
       <body>
         <AntdRegistry>
           <NextAuthWrapper>
-            <Header />
             <div>
               {children}
             </div>

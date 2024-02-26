@@ -32,7 +32,7 @@ const AuthSignIn = () => {
     };
 
     return (
-        <Row justify="center" align="middle" style={{ minHeight: '100%', overflowX: 'hidden' }}>
+        <Row justify="center" align="middle" style={{ minHeight: '100%' }}>
             <Col xs={22} sm={20} md={15} lg={12} xl={10}
                 style={{
                     display: 'flex',

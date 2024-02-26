@@ -8,7 +8,7 @@ export default async function AdminPage() {
   if (session) {
     redirect("/admin/dashboard")
   } else {
-    redirect("/unauthorized/access-denied")
+    redirect("/auth/signin")
   }
 }
 

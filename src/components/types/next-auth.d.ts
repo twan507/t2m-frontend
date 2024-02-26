@@ -7,7 +7,10 @@ interface IUser {
     name: string;
     phoneNumber: string;
     affiliateCode: string;
-    license: string;
+    licenseInfo: {
+        daysLeft: number,
+        product: string
+    },
     role: string;
 }
 

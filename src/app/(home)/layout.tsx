@@ -5,7 +5,6 @@ import {
   DoubleLeftOutlined,
   DoubleRightOutlined,
   LogoutOutlined,
-  LoginOutlined,
   UserOutlined,
   FileDoneOutlined,
   ProductOutlined,
@@ -32,16 +31,25 @@ function getAvatarName(name: string): string {
   return (firstInitial + lastInitial).toUpperCase();
 }
 
+function capitalizeFirstLetter(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
 function getUserName(name: string): string {
-  const words = name.split(' ').filter(Boolean);
+  const words = name.split(' ').filter(Boolean).map(capitalizeFirstLetter);
 
   if (words.length === 0) return '';
   if (words.length === 1) return words[0];
+  if (words.length > 4) {
+    // Bỏ từ thứ hai và lấy 3 từ còn lại
+    return `${words[0]} ${words[2]} ${words[3]}`;
+  }
 
-  return `${words[0]} ${words[words.length - 1]}`;
+  // Trường hợp còn lại, trả về tên đầy đủ
+  return words.join(' ');
 }
 
-const HomeLayout = ({ children }: React.PropsWithChildren) => {
+const AdminLayout = ({ children }: React.PropsWithChildren) => {
   const { Sider } = Layout;
 
   const [collapsed, setCollapsed] = useState(true);
@@ -54,35 +62,6 @@ const HomeLayout = ({ children }: React.PropsWithChildren) => {
 
   //@ts-ignore
   const path = children?.props.childProp?.segment
-
-  const header_menu: MenuProps['items'] = [
-    {
-      label: <Link href="/">Home</Link>,
-      key: 'home',
-      icon: <HomeOutlined />,
-    },
-    {
-      label: <Link href="/admin">Admin</Link>,
-      key: 'admin',
-      icon: <UserOutlined />,
-    },
-    session ? {
-      label: <Link href="#" onClick={async () => {
-        await sendRequest<IBackendRes<any>>({
-          url: `http://localhost:8000/api/v1/auth/logout`,
-          method: "POST",
-          headers: { 'Authorization': `Bearer ${session?.access_token}` }
-        })
-        signOut()
-      }}>Logout</Link>,
-      key: 'logout',
-      icon: <UserOutlined />,
-    } : {
-      label: <Link href="/auth/signin">Login</Link>,
-      key: 'login',
-      icon: <UserOutlined />,
-    }
-  ];
 
   const sider_menu = [
     {
@@ -134,7 +113,7 @@ const HomeLayout = ({ children }: React.PropsWithChildren) => {
 
   return (
     <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth='50px' width='160px'
+      <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth='55px' width='200px'
         style={{
           background: '#0a0a0a',
           borderRight: '2px solid #303030',
@@ -152,18 +131,34 @@ const HomeLayout = ({ children }: React.PropsWithChildren) => {
           }}
           block={true}
           style={{
-            marginTop: '5px',
-            height: "45px",
+            marginTop: '10px',
+            height: "50px",
             color: '#dfdfdf',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'middle'
           }}
         >
           <Avatar
             icon={session ? null : <UserOutlined />}
-            style={{ backgroundColor: session ? '#7265e6' : '#404040', marginLeft: '-8px', marginRight: '10px', marginBottom: '5px' }}
+            style={{ backgroundColor: session ? '#7265e6' : '#404040', marginLeft: '-8px', marginRight: '10px', marginBottom: '5px', minWidth: '36px', height: '36px', paddingTop: '3px' }}
           >
             {session ? getAvatarName(session.user.name) : ''}
           </Avatar>
-          {collapsed ? '' : (session ? getUserName(session.user.name) : 'Đăng nhập')}
+          {!collapsed && (
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginTop: session ? '-4px' : '3px', marginLeft: session ? '0px' : '12px' }}>
+              <div style={{ fontSize: 14, marginTop: -5 }}>{collapsed ? '' : (session ? getUserName(session.user.name) : 'Đăng nhập')}</div>
+              {session && (
+                <div style={{ display: 'flex', marginTop: -3 }} >
+                  <div style={{ fontSize: 12, marginTop: 2, padding: '0px 5px 0px 5px', background: '#404040', borderRadius: 5, width: 'fit-content' }}>{collapsed ? null : session.user.licenseInfo.product ?? 'FREE'}</div>
+                  {session.user.licenseInfo.daysLeft && (
+                    //@ts-ignore
+                    <div style={{ fontSize: 12, marginTop: 2, marginLeft: '5px', padding: '0px 5px 0px 5px', background: '#A20D0D', borderRadius: 5, width: 'fit-content' }}>{collapsed ? null : `${session.user.licenseInfo.daysLeft} days`}</div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </Button>
         <Button
           type="text"
@@ -201,7 +196,7 @@ const HomeLayout = ({ children }: React.PropsWithChildren) => {
                 height: "50px",
                 color: '#dfdfdf',
                 marginLeft: collapsed ? '8px' : '13px',
-                marginTop: `calc(100vh - 100px - ${5 * 55}px`
+                marginTop: `calc(100vh - 110px - ${5 * 55}px`
               }}
             >
               {collapsed ? '' : 'Đăng xuất'}
@@ -210,24 +205,35 @@ const HomeLayout = ({ children }: React.PropsWithChildren) => {
         </div>
       </Sider>
       <Layout style={{ background: '#0a0a0a' }}>
-        <Header style={{ margin: '0px', padding: '0px', height: '50px' }}>
+        <Header style={{ margin: '0px', padding: '0px', height: '60px' }}>
           <Menu
             style={{
               background: '#0a0a0a',
-              height: '50px',
+              height: '100%', display: 'flex', alignItems: 'center',
               borderBottom: '2px solid #303030',
               position: 'sticky',
               top: 0,
               zIndex: 1000
             }}
             theme='dark'
-            selectedKeys={[]}
             mode="horizontal"
-            items={header_menu}
+            selectedKeys={[]}
+            items={[
+              {
+                label: <Link href='/' />,
+                key: 'home',
+                icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '150px', height: 'auto', paddingTop: '25px', marginLeft: '5px' }} />
+              }]
+            }
           />
         </Header>
         <Content
           style={{
+            margin: '24px 24px 24px 24px',
+            padding: '24px',
+            backgroundColor: 'white',
+            borderRadius: 10,
+            minHeight: 'calc(100vh - 110px)'
           }}
         >
           {children}
@@ -237,4 +243,4 @@ const HomeLayout = ({ children }: React.PropsWithChildren) => {
   );
 };
 
-export default HomeLayout;
+export default AdminLayout;

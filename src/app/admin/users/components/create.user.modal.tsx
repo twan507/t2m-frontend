@@ -107,7 +107,7 @@ const CreateUserModal = (props: IProps) => {
                         { validator: validateEmail }
                     ]}
                 >
-                    <Input placeholder="Input your Email" />
+                    <Input placeholder="Nhập Email người dùng mới" />
                 </Form.Item>
 
                 <Form.Item
@@ -119,7 +119,7 @@ const CreateUserModal = (props: IProps) => {
                         { validator: validatePassword }
                     ]}
                 >
-                    <Input.Password placeholder="Input your Password" />
+                    <Input.Password placeholder="Password tối thiểu 6 kí tự, bao gồm 1 chữ in hoa và 1 chữ số" />
                 </Form.Item>
 
                 <Form.Item
@@ -128,7 +128,7 @@ const CreateUserModal = (props: IProps) => {
                     name="name"
                     rules={[{ required: true, message: 'Tên người dùng không được để trống!' }]}
                 >
-                    <Input placeholder="Input your Name" />
+                    <Input placeholder="Nhập tên đầy đủ của người dùng" />
                 </Form.Item>
 
                 <Form.Item
@@ -140,7 +140,7 @@ const CreateUserModal = (props: IProps) => {
                         { validator: validatePhoneNumber }
                     ]}
                 >
-                    <Input placeholder="Input your Phone Number" style={{ width: "100%" }} />
+                    <Input placeholder="Nhập số điện thoại người dùng" style={{ width: "100%" }} />
                 </Form.Item>
 
                 <Form.Item
@@ -149,7 +149,7 @@ const CreateUserModal = (props: IProps) => {
                     label="Role"
                     rules={[{ required: true, message: 'Role không được để trống!' }]}>
                     <Select
-                        placeholder="Select a option and change input text above"
+                        placeholder="Chọn Role cho người dùng"
                         allowClear
                     >
                         <Option value="NORMAL_USER">USER</Option>

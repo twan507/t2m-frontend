@@ -32,7 +32,7 @@ function getAvatarName(name: string): string {
 }
 
 function capitalizeFirstLetter(word: string): string {
-  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 function getUserName(name: string): string {
@@ -110,7 +110,6 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
       icon: <UserSwitchOutlined />,
     },
   ]
-
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth='55px' width='200px'
@@ -141,7 +140,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
         >
           <Avatar
             icon={session ? null : <UserOutlined />}
-            style={{ backgroundColor: session ? '#7265e6' : '#404040', marginLeft: '-8px', marginRight: '10px', marginBottom: '5px', minWidth: '36px', height: '36px', paddingTop: '3px' }}
+            style={{ backgroundColor: session ? '#7265e6' : '#404040', marginLeft: '-8px', marginRight: '10px', marginBottom: '5px', minWidth: '36px', height: '36px', paddingTop: '2px' }}
           >
             {session ? getAvatarName(session.user.name) : ''}
           </Avatar>
@@ -150,7 +149,20 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
               <div style={{ fontSize: 14, marginTop: -5 }}>{collapsed ? '' : (session ? getUserName(session.user.name) : 'Đăng nhập')}</div>
               {session && (
                 <div style={{ display: 'flex', marginTop: -3 }} >
-                  <div style={{ fontSize: 12, marginTop: 2, padding: '0px 5px 0px 5px', background: '#404040', borderRadius: 5, width: 'fit-content' }}>{collapsed ? null : session.user.licenseInfo.product ?? 'FREE'}</div>
+                  <div style={{
+                    fontSize: 12, marginTop: 2, padding: '0px 5px 0px 5px',
+                    background:
+                      session.user.role === "T2M ADMIN" ? '#98217c' : (
+                        !session.user.licenseInfo.product ? '#404040' : (
+                          session.user.licenseInfo.product === "BASIC" ? '#1E7607' : (
+                            session.user.licenseInfo.product === "PRO" ? '#1777ff' : (
+                              session.user.licenseInfo.product === "PREMIUM" ? '#98217c' : '#404040'
+                            )))),
+                    borderRadius: 5, width: 'fit-content'
+                  }}
+                  >
+                    {collapsed ? null : session.user.role === "T2M ADMIN" ? "ADMIN" : session.user.licenseInfo.product ?? 'FREE'}
+                  </div>
                   {session.user.licenseInfo.daysLeft && (
                     //@ts-ignore
                     <div style={{ fontSize: 12, marginTop: 2, marginLeft: '5px', padding: '0px 5px 0px 5px', background: '#A20D0D', borderRadius: 5, width: 'fit-content' }}>{collapsed ? null : `${session.user.licenseInfo.daysLeft} days`}</div>

@@ -1,8 +1,9 @@
 'use client'
 import { sendRequest } from '@/utlis/api';
-import { Modal, Input, notification, Form, Select, InputNumber } from 'antd';
+import { Modal, Input, notification, Form, Select } from 'antd';
 import { RuleObject } from 'antd/es/form';
 import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 const { Option } = Select;
 
 interface IProps {
@@ -15,15 +16,28 @@ const CreateUserModal = (props: IProps) => {
 
     const { data: session } = useSession()
 
+    let tempInitial: string[] = []
+    const [validSponsorsCode, setValidSponsorsCode] = useState(tempInitial)
+
     const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
 
-    // Hàm kiểm tra Sponsors Code 
-    const validSponsorsCode = ["VIP001", "VIP002", "VIP003"]
-    const validateSponsorsCode = (_: RuleObject, value: string) => {
+    const getSponsorsCodeList = async () => {
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `http://localhost:8000/api/v1/discountcodes/sponsorcode`,
+            method: "GET",
+        })
+        setValidSponsorsCode(res.data)
+    }
+
+    useEffect(() => {
+        getSponsorsCodeList()
+    }, [])
+
+    const validateSponsorsCode = (_: RuleObject, value: any) => {
         if (!value || validSponsorsCode.includes(value)) {
             return Promise.resolve();
         }
-        return Promise.reject(new Error('Sponsors Code không tồn tại!'));
+        return Promise.reject(new Error('Mã giới thiệu không tồn tại!'));
     };
 
     //Hàm kiểm tra email
@@ -52,8 +66,8 @@ const CreateUserModal = (props: IProps) => {
     };
 
     const onFinish = async (values: any) => {
-        const { name, email, password, phoneNumber, affiliateCode, sponsorCode, role } = values
-        const data = { name, email, password, phoneNumber, affiliateCode, sponsorCode, role }
+        const { name, email, password, phoneNumber, sponsorCode, role } = values
+        const data = { name, email, password, phoneNumber, sponsorCode, role }
 
         const res = await sendRequest<IBackendRes<any>>({
             url: `http://localhost:8000/api/v1/users`,
@@ -98,6 +112,12 @@ const CreateUserModal = (props: IProps) => {
                 layout="vertical"
                 form={form}
             >
+                {/* Dummy fields */}
+                <div style={{ display: 'none' }}>
+                    <Input name="username" type="text" autoComplete="username" />
+                    <Input name="password" type="password" autoComplete="current-password" />
+                </div>
+                
                 <Form.Item
                     style={{ marginBottom: "5px" }}
                     label="Email"
@@ -133,7 +153,7 @@ const CreateUserModal = (props: IProps) => {
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    label="PhoneNumber"
+                    label="Số điện thoại"
                     name="phoneNumber"
                     rules={[
                         { required: true, message: 'Số điện thoại không được để trống!' },
@@ -155,14 +175,6 @@ const CreateUserModal = (props: IProps) => {
                         <Option value="T2M USER">USER</Option>
                         <Option value="T2M ADMIN">ADMIN</Option>
                     </Select>
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    name="affiliateCode"
-                    label="Mã CTV"
-                >
-                    <Input placeholder="Nhập mã cộng tác viên (Nếu có)" style={{ width: "100%" }} />
                 </Form.Item>
 
                 <Form.Item

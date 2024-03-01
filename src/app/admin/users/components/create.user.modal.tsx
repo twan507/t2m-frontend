@@ -152,8 +152,8 @@ const CreateUserModal = (props: IProps) => {
                         placeholder="Select a option and change input text above"
                         allowClear
                     >
-                        <Option value="NORMAL_USER">USER</Option>
-                        <Option value="SUPER_ADMIN">ADMIN</Option>
+                        <Option value="T2M USER">USER</Option>
+                        <Option value="T2M ADMIN">ADMIN</Option>
                     </Select>
                 </Form.Item>
 

@@ -13,10 +13,10 @@ const columns: TableProps<any>['columns'] = [
   {
     title: 'Email',
     dataIndex: 'email',
-    render: (value, record) => <a>{record.email}</a>,
+    render: (value, record) => <a>{value}</a>,
   },
   {
-    title: 'Name',
+    title: 'Tên người dùng',
     dataIndex: 'name',
   },
   {
@@ -27,6 +27,19 @@ const columns: TableProps<any>['columns'] = [
     title: 'Role',
     dataIndex: 'role',
   },
+  {
+    title: 'Mã CTV',
+    dataIndex: 'affiliateCode',
+  },
+  {
+    title: 'Mã giới thiệu',
+    dataIndex: 'sponsorCode',
+  },
+  {
+    title: 'Ngày tạo',
+    dataIndex: 'createdAt',
+    render: (value, record) => new Date(value).toLocaleDateString('en-GB')
+  },
 ];
 
 const PageUsers = () => {
@@ -35,20 +48,41 @@ const PageUsers = () => {
 
   const [listUsers, setListUsers] = useState([])
 
+  const [meta, setMeta] = useState({
+    current: 1,
+    pageSize: 2,
+    pages: 0,
+    total: 0,
+  })
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   const getData = async () => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/users?current=1&pageSize=3`,
+      url: `http://localhost:8000/api/v1/users`,
       method: "GET",
+      queryParams: { current: meta.current, pageSize: meta.pageSize },
       headers: { 'Authorization': `Bearer ${session?.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
+    try { setMeta(res.data.meta) } catch (error) { }
   }
+
+  const handleOnChange = async (current: number, pageSize: number) => {
+    const res = await sendRequest<IBackendRes<any>>({
+      url: `http://localhost:8000/api/v1/users`,
+      method: "GET",
+      queryParams: { current: current, pageSize: pageSize },
+      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+    })
+    try { setListUsers(res.data.result) } catch (error) { }
+    try { setMeta(res.data.meta) } catch (error) { }
+}
 
   useEffect(() => {
     getData()
   }, [session])
+
 
   return (
     <>
@@ -66,6 +100,14 @@ const PageUsers = () => {
         columns={columns}
         dataSource={listUsers}
         rowKey={"_id"}
+        pagination={{
+          current: meta.current,
+          pageSize: meta.pageSize,
+          total: meta.total,
+          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+          onChange: (current: number, pageSize: number) => { handleOnChange(current, pageSize) },
+          showSizeChanger: true
+        }}
       />
     </>
   )

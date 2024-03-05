@@ -1,0 +1,120 @@
+'use client'
+import { sendRequest } from '@/utlis/api';
+import { Modal, Input, notification, Form, Select, Button } from 'antd';
+import { RuleObject } from 'antd/es/form';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+
+interface IProps {
+    getData: any
+    isResetPasswordOpen: boolean
+    setIsResetPasswordOpen: (v: boolean) => void
+    updateUserRecord: any
+}
+
+const ResetPasswordModal = (props: IProps) => {
+
+    const { data: session } = useSession()
+    const [form] = Form.useForm()
+
+    const { getData, isResetPasswordOpen, setIsResetPasswordOpen, updateUserRecord } = props
+
+
+    useEffect(() => {
+        if (updateUserRecord) {
+            form.setFieldsValue({
+                email: updateUserRecord.email,
+            })
+        }
+    }, [isResetPasswordOpen])
+
+    //Hàm kiểm tra email
+    const validatePassword = async (_: RuleObject, value: string) => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
+        if (value && !passwordRegex.test(value)) {
+            throw new Error('Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm 1 chữ cái in hoa và 1 chữ số');
+        }
+    };
+
+    const handleClose = () => {
+        form.resetFields()
+        setIsResetPasswordOpen(false)
+    }
+
+    const onFinish = async (values: any) => {
+        const { newPassword, confirmPassword } = values
+        const data = { newPassword, confirmPassword }
+        console.log(updateUserRecord.email, data.newPassword, data.confirmPassword)
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `http://localhost:8000/api/v1/users/admin-change-password`,
+            method: "POST",
+            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            body: { email: updateUserRecord.email, newPassword: data.newPassword, confirmPassword: data.confirmPassword }
+        })
+
+        if (res.data) {
+            await getData()
+            notification.success({
+                message: `Đặt lại mật khẩu thành công cho ${updateUserRecord.email}`
+            })
+            getData()
+        } else {
+            notification.error({
+                message: "Có lỗi xảy ra",
+                description: res.message
+            })
+        }
+        handleClose()
+    }
+
+    return (
+        <Modal
+            title="Đặt lại mật khẩu người dùng"
+            open={isResetPasswordOpen}
+            onOk={() => form.submit()}
+            onCancel={handleClose}
+            maskClosable={false}>
+
+            <Form
+                name="basic"
+                initialValues={{ remember: true }}
+                onFinish={onFinish}
+                layout="vertical"
+                form={form}
+            >
+
+                <Form.Item
+                    style={{ marginBottom: "5px" }}
+                    label="Mật khẩu mới"
+                    name="newPassword"
+                    rules={[
+                        { required: true, message: 'Mật khẩu không được để trống!' },
+                        { validator: validatePassword }
+                    ]}
+                >
+                    <Input.Password placeholder="Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm 1 chữ cái in hoa và 1 chữ số" />
+                </Form.Item>
+
+                <Form.Item
+                    style={{ marginBottom: "5px" }}
+                    label="Xác nhận mật khẩu"
+                    name="confirmPassword"
+                    rules={[
+                        { required: true, message: 'Xác nhận mật khẩu không được để trống!' },
+                        { validator: validatePassword }
+                    ]}
+                >
+                    <Input.Password placeholder="Xác nhận mật khẩu" />
+                </Form.Item>
+
+                <Form.Item style={{ display: 'none' }}>
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                    </Button>
+                </Form.Item>
+            </Form>
+        </Modal>
+    )
+}
+
+export default ResetPasswordModal

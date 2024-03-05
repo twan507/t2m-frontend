@@ -31,6 +31,9 @@ export const authOptions: AuthOptions = {
             }
         })
     ],
+    session: {
+        maxAge: 60*60*24,
+    },
     callbacks: {
         jwt({ token, user, account, profile, trigger }) {
 

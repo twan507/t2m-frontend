@@ -1,6 +1,6 @@
 'use client'
 import { sendRequest } from '@/utlis/api';
-import { Modal, Input, notification, Form, Select } from 'antd';
+import { Modal, Input, notification, Form, Select, Button } from 'antd';
 import { RuleObject } from 'antd/es/form';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -184,6 +184,12 @@ const CreateUserModal = (props: IProps) => {
                     rules={[{ validator: validateSponsorsCode }]}
                 >
                     <Input placeholder="Nhập mã giới thiệu (Nếu có)" style={{ width: "100%" }} />
+                </Form.Item>
+
+                <Form.Item style={{ display: 'none' }}>
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                    </Button>
                 </Form.Item>
             </Form>
         </Modal>

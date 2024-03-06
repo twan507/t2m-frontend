@@ -10,26 +10,24 @@ import { sendRequest } from '@/utlis/api';
 
 import {
   EditOutlined,
-  DeleteOutlined,
-  CaretUpOutlined,
-  CaretDownOutlined,
   RedoOutlined,
-  PlusCircleOutlined
+  PlusCircleOutlined,
+  CloseOutlined,
+  CheckOutlined
 } from '@ant-design/icons';
 
 import CreateUserModal from '../users/components/create.user.modal';
 import UpdateUserModal from '../users/components/update.user.modal';
 import ManageCTVModal from '../users/components/manege.ctv.modal';
 import ResetPasswordModal from '../users/components/reset.password.modal';
+import CreatProductModal from './components/create.products.modal';
 
 
 interface DataType {
-  email: string;
   name: string;
-  phoneNumber: string;
-  role: string;
-  affiliateCode: string;
-  sponsorCode: string;
+  monthsDuration: number;
+  isActive: boolean;
+  createdBy: string;
   createdAt: string;
 }
 
@@ -60,7 +58,7 @@ const PageProducts: React.FC = () => {
 
   const getData = async () => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/users`,
+      url: `http://localhost:8000/api/v1/products`,
       method: "GET",
       queryParams: { current: meta.current, pageSize: meta.pageSize },
       headers: { 'Authorization': `Bearer ${session?.access_token}` }
@@ -198,83 +196,46 @@ const PageProducts: React.FC = () => {
       ),
   });
 
-  // const columns: TableColumnsType<DataType> = [
-  //   {
-  //     title: 'Name',
-  //     dataIndex: 'name',
-  //     key: 'name',
-  //     width: '30%',
-  //     ...getColumnSearchProps('name'),
-  //   },
-  //   {
-  //     title: 'Age',
-  //     dataIndex: 'age',
-  //     key: 'age',
-  //     width: '20%',
-  //     ...getColumnSearchProps('age'),
-  //   },
-  //   {
-  //     title: 'Address',
-  //     dataIndex: 'address',
-  //     key: 'address',
-  //     ...getColumnSearchProps('address'),
-  //     sorter: (a, b) => a.address.length - b.address.length,
-  //     sortDirections: ['descend', 'ascend'],
-  //   },
-  // ];
-
   const columns: TableProps<any>['columns'] = [
     {
-      title: 'Email',
-      dataIndex: 'email',
-      render: (value, record) => <a>{value}</a>,
-      ...getColumnSearchProps('email'),
-    },
-    {
-      title: 'Tên người dùng',
+      title: 'Tên sản phẩm',
       dataIndex: 'name',
       ...getColumnSearchProps('name'),
-    },
-    {
-      title: 'Số điện thoại',
-      dataIndex: 'phoneNumber',
-      ...getColumnSearchProps('phoneNumber'),
-    },
-    {
-      title: 'Role',
-      dataIndex: 'role',
-      ...getColumnSearchProps('role'),
       render: (value, record) => {
-        const tagColor = value === 'T2M ADMIN' ? 'purple' :
-          value === 'T2M CTV' ? 'blue' :
-            value === 'T2M USER' ? 'default' : 'green';
-
+        const tagColor = value === 'FREE' ? '#404040' :
+          value === 'BASIC' ? '#1E7607' :
+          value === 'PRO' ? '#1777ff' :
+            value === 'PREMIUM' ? '#98217c' : '#D6D000';
         return (
           <Tag color={tagColor}>
             {value}
+          </Tag>
+        )
+      }
+    },
+    {
+      title: 'Thời hạn (Tháng)',
+      dataIndex: 'monthsDuration',
+      ...getColumnSearchProps('monthsDuration'),
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'isActive',
+      ...getColumnSearchProps('isActive'),
+      render: (value, record) => {
+        const tagColor = value === true ? 'green' : 'default'
+        return (
+          <Tag color={tagColor}>
+            {value ? "Active" : "Inactive"}
           </Tag>
         );
       },
     },
     {
-      title: 'Mã CTV',
-      dataIndex: 'affiliateCode',
-      ...getColumnSearchProps('affiliateCode'),
-      render: (value, record) => (
-        <Tag color={'volcano'}>
-          {value}
-        </Tag>
-      )
-    },
-    {
-      title: 'Mã giới thiệu',
-      dataIndex: 'sponsorCode',
-      ...getColumnSearchProps('sponsorCode'),
-      render: (value, record) => (
-        <Tag color={'green'}>
-          {value}
-        </Tag>
-      )
+      title: 'Người tạo',
+      dataIndex: 'createdBy',
+      ...getColumnSearchProps('createdBy'),
+      render: (value: any, record) => value?.email
     },
     {
       title: 'Ngày tạo',
@@ -284,32 +245,32 @@ const PageProducts: React.FC = () => {
       render: (value, record) => new Date(value).toLocaleDateString('en-GB'),
     },
     {
-      title: 'Quyền CTV',
+      title: 'Kích hoạt / Huỷ kích hoạt',
       align: 'center',
       render: (value, record) => {
-        if (record.role === 'T2M USER') {
-          return (
-            <Button
-              type={"primary"}
-              icon={<CaretUpOutlined />}
-              onClick={() => {
-                setIsCTVModalOpen(true)
-                setUpdateUserRecord(record)
-              }}>
-              CTV
-            </Button>
-          )
-        } else if (record.role === 'T2M CTV') {
+        if (record.isActive === true) {
           return (
             <Button
               type={"primary"} danger
-              icon={<CaretDownOutlined />}
+              ghost
+              icon={<CloseOutlined />}
               onClick={() => {
                 setIsCTVModalOpen(true)
                 setUpdateUserRecord(record)
-              }}>
-              CTV
-            </Button>
+              }}
+            />
+
+          )
+        } else if (record.isActive === false) {
+          return (
+            <Button
+              type={"primary"}
+              icon={<CheckOutlined />}
+              onClick={() => {
+                setIsCTVModalOpen(true)
+                setUpdateUserRecord(record)
+              }}
+            />
           )
         }
       }
@@ -338,15 +299,6 @@ const PageProducts: React.FC = () => {
                 setUpdateUserRecord(record)
               }}>
             </Button>
-            <Popconfirm
-              title="Confirm"
-              description={`Xác nhận xoá ${record.name}?`}
-              onConfirm={() => confirmDelete(record)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button danger type={"primary"} shape="circle" style={{ marginLeft: "5px" }} icon={<DeleteOutlined />} />
-            </Popconfirm>
           </div>
         )
       }
@@ -355,7 +307,7 @@ const PageProducts: React.FC = () => {
 
   return (
     <>
-      <CreateUserModal
+      <CreatProductModal
         getData={getData}
         isCreateModalOpen={isCreateModalOpen}
         setIsCreateModalOpen={setIsCreateModalOpen}
@@ -383,7 +335,7 @@ const PageProducts: React.FC = () => {
       />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1> Danh sách Users</h1>
+        <h1> Danh sách sản phẩm</h1>
         <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
       </div>
       <Table

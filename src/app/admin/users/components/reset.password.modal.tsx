@@ -1,7 +1,7 @@
 'use client'
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button } from 'antd';
-import { RuleObject } from 'antd/es/form';
+import { FormInstance, RuleObject } from 'antd/es/form';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
@@ -28,13 +28,21 @@ const ResetPasswordModal = (props: IProps) => {
         }
     }, [isResetPasswordOpen])
 
-    //Hàm kiểm tra email
+    //Hàm kiểm tra password
     const validatePassword = async (_: RuleObject, value: string) => {
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
         if (value && !passwordRegex.test(value)) {
-            throw new Error('Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm 1 chữ cái in hoa và 1 chữ số');
+            throw new Error('Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm cả ký tự in hoa và chữ số.');
         }
     };
+
+    //Hàm kiểm tra confirm password
+    const validatePasswordsMatch = async (_: RuleObject, value: string) => {
+        if (form.getFieldValue('newPassword') !== value) {
+            throw new Error('Mật khẩu xác nhận chưa trùng khớp');
+        }
+    };
+
 
     const handleClose = () => {
         form.resetFields()
@@ -92,7 +100,7 @@ const ResetPasswordModal = (props: IProps) => {
                         { validator: validatePassword }
                     ]}
                 >
-                    <Input.Password placeholder="Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm 1 chữ cái in hoa và 1 chữ số" />
+                    <Input.Password placeholder="Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm cả ký tự in hoa và chữ số." />
                 </Form.Item>
 
                 <Form.Item
@@ -101,7 +109,7 @@ const ResetPasswordModal = (props: IProps) => {
                     name="confirmPassword"
                     rules={[
                         { required: true, message: 'Xác nhận mật khẩu không được để trống!' },
-                        { validator: validatePassword }
+                        { validator: validatePasswordsMatch }
                     ]}
                 >
                     <Input.Password placeholder="Xác nhận mật khẩu" />

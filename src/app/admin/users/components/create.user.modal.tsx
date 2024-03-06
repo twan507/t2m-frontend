@@ -16,10 +16,10 @@ const CreateUserModal = (props: IProps) => {
 
     const { data: session } = useSession()
 
+    const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
+
     let tempInitial: string[] = []
     const [validSponsorsCode, setValidSponsorsCode] = useState(tempInitial)
-
-    const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
 
     const getSponsorsCodeList = async () => {
         const res = await sendRequest<IBackendRes<any>>({
@@ -61,11 +61,20 @@ const CreateUserModal = (props: IProps) => {
     const validatePassword = async (_: RuleObject, value: string) => {
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
         if (value && !passwordRegex.test(value)) {
-            throw new Error('Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm 1 chữ cái in hoa và 1 chữ số');
+            throw new Error('Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm cả ký tự in hoa và chữ số.');
+        }
+    };
+
+    //Hàm kiểm tra confirm password
+    const validatePasswordsMatch = async (_: RuleObject, value: string) => {
+        if (form.getFieldValue('password') !== value) {
+            throw new Error('Mật khẩu xác nhận chưa trùng khớp');
         }
     };
 
     const onFinish = async (values: any) => {
+        console.log(values)
+
         const { name, email, password, phoneNumber, sponsorCode, role } = values
         const data = { name, email, password, phoneNumber, sponsorCode, role }
 
@@ -117,7 +126,16 @@ const CreateUserModal = (props: IProps) => {
                     <Input name="username" type="text" autoComplete="username" />
                     <Input name="password" type="password" autoComplete="current-password" />
                 </div>
-                
+
+                <Form.Item
+                    style={{ marginBottom: "5px" }}
+                    label="Tên người dùng"
+                    name="name"
+                    rules={[{ required: true, message: 'Tên người dùng không được để trống!' }]}
+                >
+                    <Input placeholder="Nhập tên đầy đủ của người dùng" />
+                </Form.Item>
+
                 <Form.Item
                     style={{ marginBottom: "5px" }}
                     label="Email"
@@ -144,11 +162,14 @@ const CreateUserModal = (props: IProps) => {
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    label="Tên người dùng"
-                    name="name"
-                    rules={[{ required: true, message: 'Tên người dùng không được để trống!' }]}
+                    label="Xác nhận mật khẩu"
+                    name="confirmPassword"
+                    rules={[
+                        { required: true, message: 'Xác nhận mật khẩu không được để trống!' },
+                        { validator: validatePasswordsMatch }
+                    ]}
                 >
-                    <Input placeholder="Nhập tên đầy đủ của người dùng" />
+                    <Input.Password placeholder="Xác nhận mật khẩu" />
                 </Form.Item>
 
                 <Form.Item
@@ -170,7 +191,7 @@ const CreateUserModal = (props: IProps) => {
                     rules={[{ required: true, message: 'Role không được để trống!' }]}>
                     <Select
                         placeholder="Chọn Role cho người dùng"
-                        allowClear
+                        defaultValue="T2M USER"
                     >
                         <Option value="T2M USER">USER</Option>
                         <Option value="T2M ADMIN">ADMIN</Option>

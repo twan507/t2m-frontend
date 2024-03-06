@@ -50,7 +50,7 @@ const PageUsers: React.FC = () => {
 
   const [meta, setMeta] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 8,
     pages: 0,
     total: 0,
   })
@@ -241,6 +241,7 @@ const PageUsers: React.FC = () => {
           return (
             <Button
               type={"primary"}
+              ghost
               icon={<CaretUpOutlined />}
               onClick={() => {
                 setIsCTVModalOpen(true)

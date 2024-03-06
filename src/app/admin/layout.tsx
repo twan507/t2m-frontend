@@ -16,6 +16,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { sendRequest } from '@/utlis/api';
 import { useRouter } from 'next/navigation';
 import AuthSignInModal from '@/components/auth/signin.modal';
+import AuthSignUpModal from '@/components/auth/signup.modal';
 
 const { Header, Footer, Content } = Layout;
 
@@ -62,6 +63,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
   const showLogout = session ? true : false
 
   const [isSignInModalOpen, setSignInModalOpen] = useState(false)
+  const [isSignUpModalOpen, setSignUpModalOpen] = useState(false)
 
   //@ts-ignore
   const path = children?.props.childProp?.segment
@@ -118,6 +120,10 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
       <AuthSignInModal
         isSignInModalOpen={isSignInModalOpen}
         setSignInModalOpen={setSignInModalOpen}
+      />
+      <AuthSignUpModal
+        isSignUpModalOpen={isSignUpModalOpen}
+        setSignUpModalOpen={setSignUpModalOpen}
       />
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth='55px' width='200px'
@@ -230,7 +236,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
             <Menu
               style={{
                 background: '#0a0a0a',
-                height: '100%', display: 'flex', alignItems: 'center',
+                height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
                 borderBottom: '2px solid #303030',
                 position: 'sticky',
                 top: 0,
@@ -243,9 +249,27 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
                 {
                   label: <Link href='/' />,
                   key: 'home',
-                  icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '150px', height: 'auto', paddingTop: '25px', marginLeft: '5px' }} />
-                }]
-              }
+                  icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '150px', height: 'auto', paddingTop: '25px', marginLeft: '10px' }} />
+                },
+                ...(!session ? [
+                  {
+                    label: <Button ghost type='primary' onClick={() => setSignInModalOpen(true)}
+                      style={{ width: '120px', marginLeft: 'calc(100vw - 560px)', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
+                    >
+                      Đăng nhập
+                    </Button>,
+                    key: 'signin',
+                  },
+                  {
+                    label: <Button type='primary' onClick={() => setSignUpModalOpen(true)}
+                      style={{ width: '120px', marginLeft: '-20px', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
+                    >
+                      Đăng ký
+                    </Button>,
+                    key: 'signup',
+                  }
+                ] : []),
+              ]}
             />
           </Header>
           <Content

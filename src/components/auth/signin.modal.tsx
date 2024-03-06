@@ -1,8 +1,10 @@
 'use client'
-import React from 'react';
-import { Button, Form, Input, Row, Col, Divider, Modal } from 'antd';
+import React, { useState } from 'react';
+import { Button, Form, Input, Divider, Modal } from 'antd';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import AuthSignUpModal from './signup.modal';
+
 
 interface IProps {
     isSignInModalOpen: boolean
@@ -19,6 +21,7 @@ const AuthSignInModal = (props: IProps) => {
     const [form] = Form.useForm()
 
     const { isSignInModalOpen, setSignInModalOpen } = props
+    const [isSignUpModalOpen, setSignUpModalOpen] = useState(false)
 
     const handleClose = () => {
         form.resetFields()
@@ -61,14 +64,18 @@ const AuthSignInModal = (props: IProps) => {
           }
         `}
             </style>
+            <AuthSignUpModal
+                isSignUpModalOpen={isSignUpModalOpen}
+                setSignUpModalOpen={setSignUpModalOpen}
+            />
             <Modal
-            className="custom-modal"
-            title=""
-            open={isSignInModalOpen}
-            onOk={handleClose}
-            onCancel={handleClose}
-            footer={null}
-            closeIcon={null}
+                className="custom-modal"
+                title=""
+                open={isSignInModalOpen}
+                onOk={handleClose}
+                onCancel={handleClose}
+                footer={null}
+                closeIcon={null}
             >
                 <Form
                     form={form}
@@ -105,7 +112,7 @@ const AuthSignInModal = (props: IProps) => {
                     </Form.Item>
 
                     <Form.Item<FieldType>
-                        label={<span style={{ fontSize: 16, fontWeight: 'bold', color: '#dfdfdf' }}>Password</span>}
+                        label={<span style={{ fontSize: 16, fontWeight: 'bold', color: '#dfdfdf' }}>Mật khẩu</span>}
                         name="password"
                         rules={[{ required: true, message: 'Please input your password!' }]}
                         style={{ marginBottom: '5px' }}
@@ -113,13 +120,13 @@ const AuthSignInModal = (props: IProps) => {
                         <Input.Password size='large' />
                     </Form.Item>
 
-                    <Form.Item style={{ display: 'flex', justifyContent: 'right', marginBottom: '20px' }}>
-                        <Link
-                            href='#'
-                            style={{ fontSize: 14, fontStyle: 'italic', textDecoration: 'underline', color: '#1777ff' }}
+                    <Form.Item style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px', marginTop: '5px', marginRight: '-15px' }}>
+                        <Button
+                            type='link'
+                            style={{ fontSize: 14, fontStyle: 'italic', textDecoration: 'underline' }}
                         >
                             Quên mật khẩu?
-                        </Link>
+                        </Button>
                     </Form.Item>
 
                     <Form.Item style={{ marginBottom: '5px' }}>
@@ -140,12 +147,11 @@ const AuthSignInModal = (props: IProps) => {
 
                     <Form.Item style={{ marginTop: '5px', marginBottom: '0px' }}>
                         <Button
-                            block
+                            block ghost type='primary'
                             style={{
                                 height: '40px', // hoặc bất kỳ độ cao nào bạn muốn
                                 fontWeight: 'bold', // làm chữ đậm
                                 fontSize: 17,
-                                backgroundColor: '#dfdfdf'
                             }}
                         >
                             Sử dụng phiên bản miễn phí
@@ -155,12 +161,16 @@ const AuthSignInModal = (props: IProps) => {
                     <Form.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'middle', marginBottom: '0px' }}>
                         <p style={{ fontSize: 13, color: '#dfdfdf' }}>
                             Bạn chưa có tài khoản?&nbsp;
-                            <Link
-                                href="#"
-                                style={{ fontSize: 14, color: '#1777ff' }}
+                            <Button
+                                type='link'
+                                onClick={() => {
+                                    setSignInModalOpen(false)
+                                    setSignUpModalOpen(true)
+                                }}
+                                style={{ fontSize: 14, background: 'transparent', border: 0, padding: 0, fontStyle: 'italic' }}
                             >
-                                Đăng kí
-                            </Link>
+                                Đăng ký ngay
+                            </Button>
                         </p>
                     </Form.Item>
                 </Form>

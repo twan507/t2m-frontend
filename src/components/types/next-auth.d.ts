@@ -9,7 +9,8 @@ interface IUser {
     affiliateCode: string;
     licenseInfo: {
         daysLeft: number,
-        product: string
+        product: string,
+        accessLevel: number
     },
     role: string;
 }

@@ -75,14 +75,13 @@ const ManageCTVModal = (props: IProps) => {
             notification.success({
                 message: `Điều chỉnh quyền CTV thành công`
             })
-            getData()
+            handleClose()
         } else {
             notification.error({
                 message: "Có lỗi xảy ra",
                 description: res.message
             })
         }
-        handleClose()
     }
 
     let ctvCodePlaceHolder: any

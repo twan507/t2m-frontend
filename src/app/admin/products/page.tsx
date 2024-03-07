@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import type { TableColumnType, TableProps } from 'antd';
-import { Button, Input, Popconfirm, Space, Table, Tag, notification } from 'antd';
+import { Button, Input, Popconfirm, Space, Switch, Table, Tag, notification } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
 import { useSession } from 'next-auth/react';
@@ -26,6 +26,8 @@ import CreatProductModal from './components/create.products.modal';
 interface DataType {
   name: string;
   monthsDuration: number;
+  accessLevel: number;
+  price: number;
   isActive: boolean;
   createdBy: string;
   createdAt: string;
@@ -67,37 +69,36 @@ const PageProducts: React.FC = () => {
     try { setMeta(res.data.meta) } catch (error) { }
   }
 
-  const confirmDelete = async (user: any) => {
-    const res = await sendRequest<IBackendRes<any>>({
-      //@ts-ignore
-      url: `http://localhost:8000/api/v1/users/${user._id}`,
-      method: "DELETE",
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
-    })
-
-    if (res.data) {
-      await getData()
-      notification.success({
-        message: `Xoá thành công người dùng ${user.name}`
-      })
-      getData()
-    } else {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        description: res.message
-      })
-    }
-  }
-
   const handleOnChange = async (current: number, pageSize: number) => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/users`,
+      url: `http://localhost:8000/api/v1/products`,
       method: "GET",
       queryParams: { current: current, pageSize: pageSize },
       headers: { 'Authorization': `Bearer ${session?.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
+  }
+
+  const changeActive = async (record: any, status: boolean) => {
+    const res = await sendRequest<IBackendRes<any>>({
+      url: `http://localhost:8000/api/v1/products/${record._id}`,
+      method: "PATCH",
+      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      body: { status: status }
+    })
+
+    if (res.data) {
+      await getData()
+      notification.success({
+        message: `Điều chỉnh trạng thái thành công`
+      })
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: res.message
+      })
+    }
   }
 
   useEffect(() => {
@@ -124,7 +125,7 @@ const PageProducts: React.FC = () => {
       <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          // placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
@@ -203,9 +204,9 @@ const PageProducts: React.FC = () => {
       ...getColumnSearchProps('name'),
       render: (value, record) => {
         const tagColor = value === 'FREE' ? '#404040' :
-          value === 'BASIC' ? '#1E7607' :
-          value === 'PRO' ? '#1777ff' :
-            value === 'PREMIUM' ? '#98217c' : '#D6D000';
+          record.accessLevel === 1 ? '#1E7607' :
+            record.accessLevel === 2 ? '#1777ff' :
+              record.accessLevel === 3 ? '#7539B7' : '#98217c'; 
         return (
           <Tag color={tagColor}>
             {value}
@@ -219,16 +220,17 @@ const PageProducts: React.FC = () => {
       ...getColumnSearchProps('monthsDuration'),
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'isActive',
-      ...getColumnSearchProps('isActive'),
-      render: (value, record) => {
-        const tagColor = value === true ? 'green' : 'default'
-        return (
-          <Tag color={tagColor}>
-            {value ? "Active" : "Inactive"}
-          </Tag>
-        );
+      title: 'Access Level',
+      dataIndex: 'accessLevel',
+      ...getColumnSearchProps('accessLevel'),
+    },
+    {
+      title: 'Giá gốc',
+      dataIndex: 'price',
+      ...getColumnSearchProps('price'),
+      render: (text) => {
+        // Chuyển đổi số thành chuỗi có dấu phẩy phân cách hàng nghìn và thêm đơn vị đồng
+        return text.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
       },
     },
     {
@@ -245,35 +247,24 @@ const PageProducts: React.FC = () => {
       render: (value, record) => new Date(value).toLocaleDateString('en-GB'),
     },
     {
-      title: 'Kích hoạt / Huỷ kích hoạt',
+      title: 'Trạng thái',
       align: 'center',
+      dataIndex: 'isActive',
+      ...getColumnSearchProps('isActive'),
       render: (value, record) => {
-        if (record.isActive === true) {
-          return (
-            <Button
-              type={"primary"} danger
-              ghost
-              icon={<CloseOutlined />}
-              onClick={() => {
-                setIsCTVModalOpen(true)
-                setUpdateUserRecord(record)
-              }}
-            />
-
-          )
-        } else if (record.isActive === false) {
-          return (
-            <Button
-              type={"primary"}
-              icon={<CheckOutlined />}
-              onClick={() => {
-                setIsCTVModalOpen(true)
-                setUpdateUserRecord(record)
-              }}
-            />
-          )
-        }
-      }
+        const tagColor = value === true ? 'green' : 'red'
+        return (
+          <Tag color={tagColor}>
+            {value ? "Active" : "Inactive"}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: 'Thay đổi trạng thái',
+      align: 'center',
+      dataIndex: 'isActive',
+      render: (value, record) => < Switch defaultChecked={value} onChange={() => changeActive(record, value ? false : true)} />
     },
     {
       title: 'Chỉnh sửa thông tin',

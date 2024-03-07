@@ -1,6 +1,6 @@
 'use client'
 import { sendRequest } from '@/utlis/api';
-import { Modal, Input, notification, Form, Select, Button } from 'antd';
+import { Modal, Input, notification, Form, Select, Button, InputNumber } from 'antd';
 import { RuleObject } from 'antd/es/form';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -19,13 +19,11 @@ const CreatProductModal = (props: IProps) => {
     const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
 
     const onFinish = async (values: any) => {
-        console.log(values)
-
-        const { name, email, password, phoneNumber, sponsorCode, role } = values
-        const data = { name, email, password, phoneNumber, sponsorCode, role }
+        const { name, monthsDuration, accessLevel, price } = values
+        const data = { name, monthsDuration, accessLevel, price }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users`,
+            url: `http://localhost:8000/api/v1/products`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data
@@ -52,6 +50,14 @@ const CreatProductModal = (props: IProps) => {
         setIsCreateModalOpen(false)
     }
 
+    const validateProductName = async (_: RuleObject, value: string) => {
+        const productRegex = /^[A-Z0-9]{1,10}$/;
+        if (value && !productRegex.test(value.split('@')[0])) {
+            throw new Error('Email không đúng định dạng. Tối đa 10 kí tự bao gồm chữ hoa hoặc số.');
+        }
+    };
+
+
     return (
         <Modal
             title="Tạo mới sản phẩm"
@@ -75,88 +81,63 @@ const CreatProductModal = (props: IProps) => {
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    label="Tên người dùng"
+                    label="Tên sản phẩm"
                     name="name"
-                    rules={[{ required: true, message: 'Tên người dùng không được để trống!' }]}
+                    rules={[
+                        { required: true, message: 'Tên sản phẩm không được để trống!' },
+                        { validator: validateProductName }
+                    ]}
                 >
-                    <Input placeholder="Nhập tên đầy đủ của người dùng" />
+                    <Input placeholder="Nhập tên sản phẩm" />
                 </Form.Item>
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    label="Email"
-                    name="email"
+                    label="Thời hạn (Tháng)"
+                    name="monthsDuration"
                     rules={[
-                        { required: true, message: 'Email không được để trống!' },
+                        { required: true, message: 'Thời hạn không được để trống!' },
                         // { validator: validateEmail }
                     ]}
                 >
-                    <Input placeholder="Nhập Email người dùng mới" />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Password"
-                    name="password"
-                    rules={[
-                        { required: true, message: 'Password không được để trống!' },
-                        // { validator: validatePassword }
-                    ]}
-                >
-                    <Input.Password placeholder="Password tối thiểu 6 kí tự, bao gồm 1 chữ in hoa và 1 chữ số" />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Xác nhận mật khẩu"
-                    name="confirmPassword"
-                    rules={[
-                        { required: true, message: 'Xác nhận mật khẩu không được để trống!' },
-                        // { validator: validatePasswordsMatch }
-                    ]}
-                >
-                    <Input.Password placeholder="Xác nhận mật khẩu" />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Số điện thoại"
-                    name="phoneNumber"
-                    rules={[
-                        { required: true, message: 'Số điện thoại không được để trống!' },
-                        // { validator: validatePhoneNumber }
-                    ]}
-                >
-                    <Input placeholder="Nhập số điện thoại người dùng" style={{ width: "100%" }} />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    name="role"
-                    label="Role"
-                    rules={[{ required: true, message: 'Role không được để trống!' }]}>
-                    <Select
-                        placeholder="Chọn Role cho người dùng"
-                        defaultValue="T2M USER"
-                    >
-                        <Option value="T2M USER">USER</Option>
-                        <Option value="T2M ADMIN">ADMIN</Option>
+                    <Select placeholder="Chọn thời hạn cho sản phẩm">
+                        {
+                            Array.from({ length: 24 }, (_, i) => i + 1).map(value => (
+                                <Option key={value} value={value}>{value} Tháng</Option>
+                            ))
+                        }
                     </Select>
                 </Form.Item>
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    name="sponsorCode"
-                    label="Mã giới thiệu"
-                    // rules={[{ validator: validateSponsorsCode }]}
-                >
-                    <Input placeholder="Nhập mã giới thiệu (Nếu có)" style={{ width: "100%" }} />
+                    label="Access Level"
+                    name="accessLevel"
+                    rules={[{ required: true, message: 'Access Level không được để trống!' }]}>
+                    <Select
+                        placeholder="Chọn Access Level cho sản phẩm"
+                    >
+                        <Option value={1}>Level 1</Option>
+                        <Option value={2}>Level 2</Option>
+                        <Option value={3}>Level 3</Option>
+                        <Option value={4}>Level 4</Option>
+                    </Select>
                 </Form.Item>
 
-                <Form.Item style={{ display: 'none' }}>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
+                <Form.Item
+                    style={{ marginBottom: "5px" }}
+                    label="Giá sản phẩm"
+                    name="price"
+                    rules={[
+                        { required: true, message: 'Giá sản phẩm không được để trống!' },
+                        // { validator: validateProductName }
+                    ]}
+                >
+                    <InputNumber
+                        style={{ width: '100%' }}
+                        min={100000}
+                        step={100000}
+                        placeholder="Tối thiêu 100,000" />
                 </Form.Item>
             </Form>
         </Modal>

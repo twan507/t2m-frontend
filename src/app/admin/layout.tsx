@@ -168,10 +168,10 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
                       fontSize: 12, marginTop: 2, padding: '0px 5px 0px 5px',
                       background:
                         session.user.role === "T2M ADMIN" ? '#98217c' : (
-                          !session.user.licenseInfo.product ? '#404040' : (
-                            session.user.licenseInfo.product === "BASIC" ? '#1E7607' : (
-                              session.user.licenseInfo.product === "PRO" ? '#1777ff' : (
-                                session.user.licenseInfo.product === "PREMIUM" ? '#98217c' : '#404040'
+                          !session.user.licenseInfo.accessLevel ? '#404040' : (
+                            session.user.licenseInfo.accessLevel === 1 ? '#1E7607' : (
+                              session.user.licenseInfo.accessLevel === 2 ? '#1777ff' : (
+                                session.user.licenseInfo.accessLevel === 3 ? '#642198' : '#98217c'
                               )))),
                       borderRadius: 5, width: 'fit-content'
                     }}

@@ -52,7 +52,6 @@ const ResetPasswordModal = (props: IProps) => {
     const onFinish = async (values: any) => {
         const { newPassword, confirmPassword } = values
         const data = { newPassword, confirmPassword }
-        console.log(updateUserRecord.email, data.newPassword, data.confirmPassword)
         const res = await sendRequest<IBackendRes<any>>({
             url: `http://localhost:8000/api/v1/users/admin-change-password`,
             method: "POST",

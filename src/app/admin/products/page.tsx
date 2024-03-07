@@ -10,23 +10,17 @@ import { sendRequest } from '@/utlis/api';
 
 import {
   EditOutlined,
-  RedoOutlined,
   PlusCircleOutlined,
-  CloseOutlined,
-  CheckOutlined
 } from '@ant-design/icons';
 
-import CreateUserModal from '../users/components/create.user.modal';
-import UpdateUserModal from '../users/components/update.user.modal';
-import ManageCTVModal from '../users/components/manege.ctv.modal';
-import ResetPasswordModal from '../users/components/reset.password.modal';
 import CreatProductModal from './components/create.products.modal';
+import UpdateProductModal from './components/update.products.modal';
 
 
 interface DataType {
   name: string;
   monthsDuration: number;
-  accessLevel: number;
+  accessLevel: string;
   price: number;
   isActive: boolean;
   createdBy: string;
@@ -47,13 +41,11 @@ const PageProducts: React.FC = () => {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
-  const [isCTVModalOpen, setIsCTVModalOpen] = useState(false)
-  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false)
-  const [updateUserRecord, setUpdateUserRecord] = useState()
+  const [updateProductRecord, setUpdateProductRecord] = useState()
 
   const [meta, setMeta] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 8,
     pages: 0,
     total: 0,
   })
@@ -222,7 +214,7 @@ const PageProducts: React.FC = () => {
     {
       title: 'Access Level',
       dataIndex: 'accessLevel',
-      ...getColumnSearchProps('accessLevel'),
+      render: (value) => `Level ${value}`
     },
     {
       title: 'Giá gốc',
@@ -250,7 +242,12 @@ const PageProducts: React.FC = () => {
       title: 'Trạng thái',
       align: 'center',
       dataIndex: 'isActive',
-      ...getColumnSearchProps('isActive'),
+      sorter: (a, b) => {
+        const aValue = a.isActive ? "Active" : "Inactive";
+        const bValue = b.isActive ? "Active" : "Inactive";
+        return aValue.localeCompare(bValue);
+      },
+      sortDirections: ['descend', 'ascend'],
       render: (value, record) => {
         const tagColor = value === true ? 'green' : 'red'
         return (
@@ -271,26 +268,15 @@ const PageProducts: React.FC = () => {
       align: 'center',
       render: (value, record) => {
         return (
-          <div>
             <Button shape="circle"
               style={{ marginLeft: "5px" }}
               icon={<EditOutlined />}
               type={"primary"}
               onClick={() => {
                 setIsUpdateModalOpen(true)
-                setUpdateUserRecord(record)
+                setUpdateProductRecord(record)
               }}
             />
-            <Button
-              type={"primary"}
-              icon={<RedoOutlined />}
-              style={{ marginLeft: "5px" }}
-              onClick={() => {
-                setIsResetPasswordOpen(true)
-                setUpdateUserRecord(record)
-              }}>
-            </Button>
-          </div>
         )
       }
     },
@@ -304,25 +290,11 @@ const PageProducts: React.FC = () => {
         setIsCreateModalOpen={setIsCreateModalOpen}
       />
 
-      <UpdateUserModal
+      <UpdateProductModal
         getData={getData}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
-        updateUserRecord={updateUserRecord}
-      />
-
-      <ManageCTVModal
-        getData={getData}
-        isCTVModalOpen={isCTVModalOpen}
-        setIsCTVModalOpen={setIsCTVModalOpen}
-        updateUserRecord={updateUserRecord}
-      />
-
-      <ResetPasswordModal
-        getData={getData}
-        isResetPasswordOpen={isResetPasswordOpen}
-        setIsResetPasswordOpen={setIsResetPasswordOpen}
-        updateUserRecord={updateUserRecord}
+        updateProductRecord={updateProductRecord}
       />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

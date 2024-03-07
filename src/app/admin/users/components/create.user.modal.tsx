@@ -73,7 +73,6 @@ const CreateUserModal = (props: IProps) => {
     };
 
     const onFinish = async (values: any) => {
-        console.log(values)
 
         const { name, email, password, phoneNumber, sponsorCode, role } = values
         const data = { name, email, password, phoneNumber, sponsorCode, role }

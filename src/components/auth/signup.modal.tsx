@@ -109,7 +109,6 @@ const AuthSignUpModal = (props: IProps) => {
 
 
     const onFinish = async (values: any) => {
-        console.log(values)
         const { name, email, password, confirmPassword, phoneNumber, sponsorCode } = values
         const data = { name, email, password, confirmPassword, phoneNumber, sponsorCode }
 

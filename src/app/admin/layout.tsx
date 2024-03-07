@@ -107,11 +107,11 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
     },
     {
       label: (
-        <Link href="/admin/roles">
-          Roles
+        <Link href="/admin/discountcodes">
+          Discount Codes
         </Link>
       ),
-      key: 'roles',
+      key: 'discountcodes',
       icon: <UserSwitchOutlined />,
     },
   ]

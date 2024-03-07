@@ -8,23 +8,24 @@ const { Option } = Select;
 
 interface IProps {
     getData: any
-    isCreateModalOpen: boolean
-    setIsCreateModalOpen: (v: boolean) => void
+    isUpdateModalOpen: boolean
+    setIsUpdateModalOpen: (v: boolean) => void
+    updateProductRecord: any
 }
 
-const CreatProductModal = (props: IProps) => {
+const UpdateProductModal = (props: IProps) => {
 
     const { data: session } = useSession()
 
-    const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
+    const { getData, isUpdateModalOpen, setIsUpdateModalOpen, updateProductRecord } = props
 
     const onFinish = async (values: any) => {
         const { name, monthsDuration, accessLevel, price } = values
         const data = { name, monthsDuration, accessLevel, price }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/products`,
-            method: "POST",
+            url: `http://localhost:8000/api/v1/products/${updateProductRecord._id}`,
+            method: "PUT",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data
         })
@@ -32,7 +33,7 @@ const CreatProductModal = (props: IProps) => {
         if (res.data) {
             await getData()
             notification.success({
-                message: "Tạo mới sản phẩm thành công"
+                message: "Cập nhật thông tin sản phẩm thành công"
             })
             handleClose()
         } else {
@@ -45,9 +46,20 @@ const CreatProductModal = (props: IProps) => {
 
     const [form] = Form.useForm()
 
+    useEffect(() => {
+        if (updateProductRecord) {
+            form.setFieldsValue({
+                name: updateProductRecord.name,
+                monthsDuration: updateProductRecord.monthsDuration,
+                accessLevel: updateProductRecord.accessLevel,
+                price: updateProductRecord.price
+            })
+        }
+    }, [isUpdateModalOpen])
+
     const handleClose = () => {
         form.resetFields()
-        setIsCreateModalOpen(false)
+        setIsUpdateModalOpen(false)
     }
 
     const validateProductName = async (_: RuleObject, value: string) => {
@@ -61,7 +73,7 @@ const CreatProductModal = (props: IProps) => {
     return (
         <Modal
             title="Tạo mới sản phẩm"
-            open={isCreateModalOpen}
+            open={isUpdateModalOpen}
             onOk={() => form.submit()}
             onCancel={handleClose}
             maskClosable={false}>
@@ -144,4 +156,4 @@ const CreatProductModal = (props: IProps) => {
     )
 }
 
-export default CreatProductModal
+export default UpdateProductModal

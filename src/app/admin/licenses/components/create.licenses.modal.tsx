@@ -12,7 +12,7 @@ interface IProps {
     setIsCreateModalOpen: (v: boolean) => void
 }
 
-const CreatProductModal = (props: IProps) => {
+const CreatLicenseModal = (props: IProps) => {
 
     const { data: session } = useSession()
 
@@ -60,7 +60,7 @@ const CreatProductModal = (props: IProps) => {
 
     return (
         <Modal
-            title="Tạo mới sản phẩm"
+            title="Tạo mới License"
             open={isCreateModalOpen}
             onOk={() => form.submit()}
             onCancel={handleClose}
@@ -144,4 +144,4 @@ const CreatProductModal = (props: IProps) => {
     )
 }
 
-export default CreatProductModal
+export default CreatLicenseModal

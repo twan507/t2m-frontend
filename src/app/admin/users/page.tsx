@@ -36,7 +36,6 @@ type DataIndex = keyof DataType;
 
 const PageUsers: React.FC = () => {
   const { data: session } = useSession()
-  console.log(session)
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<any>(null);

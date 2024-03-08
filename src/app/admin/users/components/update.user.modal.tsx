@@ -72,8 +72,8 @@ const UpdateUserModal = (props: IProps) => {
     };
 
     const onFinish = async (values: any) => {
-        const { name, email, password, phoneNumber, sponsorCode, role } = values
-        const data = { name, email, password, phoneNumber, sponsorCode, role }
+        const { name, email, password, phoneNumber, sponsorCode } = values
+        const data = { name, email, password, phoneNumber, sponsorCode }
 
         const res = await sendRequest<IBackendRes<any>>({
             url: `http://localhost:8000/api/v1/users/${updateUserRecord._id}`,
@@ -150,20 +150,6 @@ const UpdateUserModal = (props: IProps) => {
                     ]}
                 >
                     <Input placeholder="Nhập số điện thoại người dùng" style={{ width: "100%" }} />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    name="role"
-                    label="Role"
-                    rules={[{ required: true, message: 'Role không được để trống!' }]}>
-                    <Select
-                        placeholder="Chọn Role cho người dùng"
-                        allowClear
-                    >
-                        <Option value="T2M USER">USER</Option>
-                        <Option value="T2M ADMIN">ADMIN</Option>
-                    </Select>
                 </Form.Item>
 
                 <Form.Item

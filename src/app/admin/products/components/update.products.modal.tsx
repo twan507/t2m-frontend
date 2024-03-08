@@ -72,7 +72,7 @@ const UpdateProductModal = (props: IProps) => {
 
     return (
         <Modal
-            title="Tạo mới sản phẩm"
+            title="Chỉnh sửa thông tin sản phẩm"
             open={isUpdateModalOpen}
             onOk={() => form.submit()}
             onCancel={handleClose}

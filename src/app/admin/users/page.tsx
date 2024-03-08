@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { TableColumnType, TableProps } from 'antd';
 import { Button, Input, Popconfirm, Space, Table, Tag, notification } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
@@ -10,7 +10,6 @@ import { sendRequest } from '@/utlis/api';
 
 import {
   EditOutlined,
-  DeleteOutlined,
   CaretUpOutlined,
   CaretDownOutlined,
   RedoOutlined,
@@ -76,6 +75,28 @@ const PageUsers: React.FC = () => {
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
   }
+
+  const confirmDelete = async (id: any) => {
+
+    const res = await sendRequest<IBackendRes<any>>({
+      url: `http://localhost:8000/api/v1/users/${id}`,
+      method: "DELETE",
+      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+    })
+
+    if (res.data) {
+      await getData()
+      notification.success({
+        message: "Xoá người dùng thành công"
+      })
+
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: res.message
+      })
+    }
+  };
 
   useEffect(() => {
     getData()
@@ -270,7 +291,7 @@ const PageUsers: React.FC = () => {
       align: 'center',
       render: (value, record) => {
         return (
-          <div>
+          <>
             <Button shape="circle"
               style={{ marginLeft: "5px" }}
               icon={<EditOutlined />}
@@ -281,15 +302,27 @@ const PageUsers: React.FC = () => {
               }}
             />
             <Button
-              type={"primary"} danger
+              type={"primary"} shape='circle'
               icon={<RedoOutlined />}
               style={{ marginLeft: "5px" }}
               onClick={() => {
                 setIsResetPasswordOpen(true)
                 setUpdateUserRecord(record)
-              }}>
-            </Button>
-          </div>
+              }} />
+            <Popconfirm
+              title="Xoá người dùng"
+              description={`${record.name}?`}
+              onConfirm={() => confirmDelete(record._id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type={"primary"} danger
+                icon={<DeleteOutlined />}
+                style={{ marginLeft: "5px" }}
+              />
+            </Popconfirm>
+          </>
         )
       }
     },

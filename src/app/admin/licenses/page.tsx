@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { TableColumnType, TableProps } from 'antd';
 import { Button, Input, Popconfirm, Space, Switch, Table, Tag, notification } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
@@ -75,13 +75,49 @@ const PageLicenses: React.FC = () => {
     try { setMeta(res.data.meta) } catch (error) { }
   }
 
+  const confirmDelete = async (id: any) => {
+    const res = await sendRequest<IBackendRes<any>>({
+      url: `http://localhost:8000/api/v1/licenses/${id}`,
+      method: "DELETE",
+      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+    })
+
+    if (res.data) {
+      await getData()
+      notification.success({
+        message: "Xoá License thành công"
+      })
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: res.message
+      })
+    }
+  };
+
   const changeActive = async (record: any, status: boolean) => {
+
+    const res_user = await sendRequest<IBackendRes<any>>({
+      url: `http://localhost:8000/api/v1/users/find-by-email`,
+      method: "POST",
+      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      body: { email: record.userEmail }
+    })
+
+    if (res_user?.data.isDeleted) {
+      notification.error({
+        message: `Người dùng ${record.userEmail} đã bị xoá, không thể kích hoạt License này`
+      })
+      return
+    }
+
     const res = await sendRequest<IBackendRes<any>>({
       url: `http://localhost:8000/api/v1/licenses/${record._id}`,
       method: "PATCH",
       headers: { 'Authorization': `Bearer ${session?.access_token}` },
       body: { status: status }
     })
+
 
     if (res.data) {
       await getData()
@@ -288,15 +324,30 @@ const PageLicenses: React.FC = () => {
       align: 'center',
       render: (value, record) => {
         return (
-          <Button shape="circle"
-            style={{ marginLeft: "5px" }}
-            icon={<EditOutlined />}
-            type={"primary"}
-            onClick={() => {
-              setIsUpdateModalOpen(true)
-              setUpdateLicenseRecord(record)
-            }}
-          />
+          <>
+            <Button shape="circle"
+              style={{ marginLeft: "5px" }}
+              icon={<EditOutlined />}
+              type={"primary"}
+              onClick={() => {
+                setIsUpdateModalOpen(true)
+                setUpdateLicenseRecord(record)
+              }}
+            />
+            <Popconfirm
+              title="Xoá License này?"
+              onConfirm={() => confirmDelete(record._id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type={"primary"} danger
+                icon={<DeleteOutlined />}
+                style={{ marginLeft: "5px" }}
+              />
+            </Popconfirm>
+          </>
+
         )
       }
     },

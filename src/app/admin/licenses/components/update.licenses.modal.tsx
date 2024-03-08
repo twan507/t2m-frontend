@@ -72,7 +72,7 @@ const UpdateLicenseModal = (props: IProps) => {
 
     return (
         <Modal
-            title="Tạo mới sản phẩm"
+            title="Chỉnh sửa thông tin License"
             open={isUpdateModalOpen}
             onOk={() => form.submit()}
             onCancel={handleClose}

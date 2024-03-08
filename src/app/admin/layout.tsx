@@ -9,7 +9,9 @@ import {
   FileDoneOutlined,
   ProductOutlined,
   UserSwitchOutlined,
-  HomeOutlined
+  HomeOutlined,
+  FallOutlined,
+  FundViewOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, Button, Avatar } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
@@ -76,7 +78,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
         </Link>
       ),
       key: 'dashboard',
-      icon: <UserOutlined />,
+      icon: <FundViewOutlined style={{ fontSize: '20px', marginLeft: '-1px' }} />
     },
     {
       label: (
@@ -85,7 +87,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
         </Link>
       ),
       key: 'users',
-      icon: <UserOutlined />,
+      icon: <UserOutlined style={{ fontSize: '18px', marginLeft: '-1px' }} />,
     },
     {
       label: (
@@ -94,7 +96,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
         </Link>
       ),
       key: 'products',
-      icon: <ProductOutlined />,
+      icon: <ProductOutlined style={{ fontSize: '18px', marginLeft: '-1px' }} />,
     },
     {
       label: (
@@ -103,7 +105,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
         </Link>
       ),
       key: 'licenses',
-      icon: <FileDoneOutlined />,
+      icon: <FileDoneOutlined style={{ fontSize: '18px', marginLeft: '-1px' }} />,
     },
     {
       label: (
@@ -112,7 +114,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
         </Link>
       ),
       key: 'discountcodes',
-      icon: <UserSwitchOutlined />,
+      icon: <FallOutlined style={{ fontSize: '18px', marginLeft: '-1px' }} />
     },
   ]
   return (

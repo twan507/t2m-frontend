@@ -12,6 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.1",
     "@ant-design/nextjs-registry": "1.0.0",
     "@types/react-highlight-words": "0.16.7",
     "antd": "5.11.1",

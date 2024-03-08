@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { TableColumnType, TableProps } from 'antd';
 import { Button, Input, Popconfirm, Space, Switch, Table, Tag, notification } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
@@ -71,6 +71,26 @@ const PageProducts: React.FC = () => {
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
   }
+
+  const confirmDelete = async (id: any) => {
+    const res = await sendRequest<IBackendRes<any>>({
+      url: `http://localhost:8000/api/v1/products/${id}`,
+      method: "DELETE",
+      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+    })
+
+    if (res.data) {
+      await getData()
+      notification.success({
+        message: "Xoá sản phẩm thành công"
+      })
+    } else {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: res.message
+      })
+    }
+  };
 
   const changeActive = async (record: any, status: boolean) => {
     const res = await sendRequest<IBackendRes<any>>({
@@ -198,7 +218,7 @@ const PageProducts: React.FC = () => {
         const tagColor = value === 'FREE' ? '#404040' :
           record.accessLevel === 1 ? '#1E7607' :
             record.accessLevel === 2 ? '#1777ff' :
-              record.accessLevel === 3 ? '#7539B7' : '#98217c'; 
+              record.accessLevel === 3 ? '#7539B7' : '#98217c';
         return (
           <Tag color={tagColor}>
             {value}
@@ -268,6 +288,7 @@ const PageProducts: React.FC = () => {
       align: 'center',
       render: (value, record) => {
         return (
+          <>
             <Button shape="circle"
               style={{ marginLeft: "5px" }}
               icon={<EditOutlined />}
@@ -277,6 +298,22 @@ const PageProducts: React.FC = () => {
                 setUpdateProductRecord(record)
               }}
             />
+            <Popconfirm
+              title="Xoá sản phẩm"
+              description={`${record.name}?`}
+              onConfirm={() => confirmDelete(record._id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type={"primary"} danger
+                icon={<DeleteOutlined />}
+                style={{ marginLeft: "5px" }}
+              />
+            </Popconfirm>
+          </>
+
+
         )
       }
     },

@@ -97,7 +97,6 @@ const CreatProductModal = (props: IProps) => {
                     name="monthsDuration"
                     rules={[
                         { required: true, message: 'Thời hạn không được để trống!' },
-                        // { validator: validateEmail }
                     ]}
                 >
                     <Select placeholder="Chọn thời hạn cho sản phẩm">
@@ -130,14 +129,13 @@ const CreatProductModal = (props: IProps) => {
                     name="price"
                     rules={[
                         { required: true, message: 'Giá sản phẩm không được để trống!' },
-                        // { validator: validateProductName }
                     ]}
                 >
                     <InputNumber
                         style={{ width: '100%' }}
                         min={100000}
                         step={100000}
-                        placeholder="Tối thiêu 100,000" />
+                        placeholder="Tối thiểu 100,000" />
                 </Form.Item>
             </Form>
         </Modal>

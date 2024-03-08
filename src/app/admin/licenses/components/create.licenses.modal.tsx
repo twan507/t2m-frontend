@@ -16,7 +16,77 @@ const CreatLicenseModal = (props: IProps) => {
 
     const { data: session } = useSession()
 
+    const [form] = Form.useForm()
+
     const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
+
+    const handleClose = () => {
+        form.resetFields()
+        setIsCreateModalOpen(false)
+        setMaxDiscount(0)
+        setFinalPrice(0)
+        setDiscountPercent(0)
+        handleDiscountPrice(0)
+    }
+
+    let tempInitial: string[] = []
+    const [validSponsorsCode, setValidSponsorsCode] = useState(tempInitial)
+    const [maxDiscount, setMaxDiscount] = useState(0)
+    const [finalPrice, setFinalPrice] = useState(0)
+    const [discountPercent, setDiscountPercent] = useState(0)
+
+    const handleDiscountPrice = (discountPercent: number) => {
+        setDiscountPercent(discountPercent)
+        setFinalPrice(finalPrice - (finalPrice * discountPercent / 100))
+    }
+
+    const getSponsorsCodeList = async () => {
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `http://localhost:8000/api/v1/discountcodes/sponsorcode`,
+            method: "GET",
+        })
+        setValidSponsorsCode(res.data)
+    }
+
+    const getMaxDiscount = async (code: string) => {
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `http://localhost:8000/api/v1/discountcodes/find-by-code`,
+            method: "POST",
+            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            body: { code: code }
+        })
+        try { setMaxDiscount(res.data.maxDiscount) } catch (error) { }
+    }
+
+    const getFinalPrice = async (name: string) => {
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `http://localhost:8000/api/v1/products/find-by-product`,
+            method: "POST",
+            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            body: { name: name }
+        })
+        try { setFinalPrice(res.data.price - (res.data.price * discountPercent / 100)) } catch (error) { }
+    }
+
+
+    useEffect(() => {
+        getSponsorsCodeList()
+    }, [])
+
+    const validateSponsorsCode = (_: RuleObject, value: any) => {
+        if (!value || validSponsorsCode.includes(value)) {
+            return Promise.resolve();
+        }
+        return Promise.reject(new Error('Mã giới thiệu không tồn tại!'));
+    };
+
+    //Hàm kiểm tra email
+    const validateEmail = async (_: RuleObject, value: string) => {
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (value && !emailRegex.test(value)) {
+            throw new Error('Email không đúng định dạng.');
+        }
+    };
 
     const onFinish = async (values: any) => {
         const { name, monthsDuration, accessLevel, price } = values
@@ -43,13 +113,6 @@ const CreatLicenseModal = (props: IProps) => {
         }
     };
 
-    const [form] = Form.useForm()
-
-    const handleClose = () => {
-        form.resetFields()
-        setIsCreateModalOpen(false)
-    }
-
     const validateProductName = async (_: RuleObject, value: string) => {
         const productRegex = /^[A-Z0-9]{1,10}$/;
         if (value && !productRegex.test(value.split('@')[0])) {
@@ -68,10 +131,13 @@ const CreatLicenseModal = (props: IProps) => {
 
             <Form
                 name="basic"
-                initialValues={{ remember: true }}
                 onFinish={onFinish}
                 layout="vertical"
                 form={form}
+                initialValues={{
+                    discountPercent: 0,
+                    finalPrice: 0,
+                }}
             >
                 {/* Dummy fields */}
                 <div style={{ display: 'none' }}>
@@ -81,11 +147,11 @@ const CreatLicenseModal = (props: IProps) => {
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    label="Tên sản phẩm"
-                    name="name"
+                    label="Email người dùng"
+                    name="userEmail"
                     rules={[
-                        { required: true, message: 'Tên sản phẩm không được để trống!' },
-                        { validator: validateProductName }
+                        { required: true, message: 'Email người dùng không được để trống!' },
+                        { validator: validateEmail }
                     ]}
                 >
                     <Input placeholder="Nhập tên sản phẩm" />
@@ -93,51 +159,61 @@ const CreatLicenseModal = (props: IProps) => {
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    label="Thời hạn (Tháng)"
-                    name="monthsDuration"
+                    label="Tên sản phẩm"
+                    name="product"
                     rules={[
-                        { required: true, message: 'Thời hạn không được để trống!' },
-                        // { validator: validateEmail }
+                        { required: true, message: 'Tên sản phẩm không được để trống!' },
+                        { validator: validateProductName }
                     ]}
                 >
-                    <Select placeholder="Chọn thời hạn cho sản phẩm">
-                        {
-                            Array.from({ length: 24 }, (_, i) => i + 1).map(value => (
-                                <Option key={value} value={value}>{value} Tháng</Option>
-                            ))
-                        }
+                    <Input onChange={(e) => getFinalPrice(e.target.value)} placeholder="Nhập tên sản phẩm" />
+                </Form.Item>
+
+                <Form.Item
+                    style={{ marginBottom: "5px" }}
+                    label="Mã giảm giá"
+                    name="discountCode"
+                    rules={[
+                        { validator: validateSponsorsCode }
+                    ]}
+                >
+                    <Input onChange={(e) => getMaxDiscount(e.target.value)} placeholder="Nhập mã giảm giá (Nếu có)" />
+                </Form.Item>
+
+                <Form.Item
+                    style={{ marginBottom: "5px" }}
+                    label="Tỉ lệ giảm giá"
+                    name="discountPercent"
+                    rules={[{ required: true, message: 'Access Level không được để trống!' }]}
+                >
+                    <Select value={discountPercent} onChange={handleDiscountPrice}>
+                        <Option value={0}>0%</Option>
+                        {maxDiscount >= 5 && <Option value={5}>5%</Option>}
+                        {maxDiscount >= 10 && <Option value={10}>10%</Option>}
+                        {maxDiscount >= 15 && <Option value={15}>15%</Option>}
+                        {maxDiscount >= 20 && <Option value={20}>20%</Option>}
+                        {maxDiscount >= 25 && <Option value={25}>25%</Option>}
+                        {maxDiscount >= 30 && <Option value={30}>30%</Option>}
+                        {maxDiscount >= 35 && <Option value={35}>35%</Option>}
+                        {maxDiscount >= 40 && <Option value={40}>40%</Option>}
+                        {maxDiscount >= 45 && <Option value={45}>45%</Option>}
+                        {maxDiscount >= 50 && <Option value={50}>50%</Option>}
                     </Select>
                 </Form.Item>
 
                 <Form.Item
                     style={{ marginBottom: "5px" }}
-                    label="Access Level"
-                    name="accessLevel"
-                    rules={[{ required: true, message: 'Access Level không được để trống!' }]}>
+                    label="Giá sau giảm"
+                    name="finalPrice"
+                    rules={[
+                        { required: true, message: 'Giá sản phẩm không được để trống!' },
+                    ]}
+                >
                     <Select
                         placeholder="Chọn Access Level cho sản phẩm"
                     >
-                        <Option value={1}>Level 1</Option>
-                        <Option value={2}>Level 2</Option>
-                        <Option value={3}>Level 3</Option>
-                        <Option value={4}>Level 4</Option>
+                        <Option value={finalPrice}>{finalPrice}</Option>
                     </Select>
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Giá sản phẩm"
-                    name="price"
-                    rules={[
-                        { required: true, message: 'Giá sản phẩm không được để trống!' },
-                        // { validator: validateProductName }
-                    ]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={100000}
-                        step={100000}
-                        placeholder="Tối thiêu 100,000" />
                 </Form.Item>
             </Form>
         </Modal>

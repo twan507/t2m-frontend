@@ -123,7 +123,7 @@ const CreateUserModal = (props: IProps) => {
                 {/* Dummy fields */}
                 <div style={{ display: 'none' }}>
                     <Input name="username" type="text" autoComplete="username" />
-                    <Input name="password" type="password" autoComplete="current-password" />
+                    <Input name="pass" type="password" autoComplete="current-password" />
                 </div>
 
                 <Form.Item

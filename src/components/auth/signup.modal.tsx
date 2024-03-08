@@ -36,19 +36,19 @@ const AuthSignUpModal = (props: IProps) => {
     const [loadings, setLoadings] = useState<boolean[]>([]);
 
     const enterLoading = (index: number) => {
-      setLoadings((prevLoadings) => {
-        const newLoadings = [...prevLoadings];
-        newLoadings[index] = true;
-        return newLoadings;
-      });
-  
-      setTimeout(() => {
         setLoadings((prevLoadings) => {
-          const newLoadings = [...prevLoadings];
-          newLoadings[index] = false;
-          return newLoadings;
+            const newLoadings = [...prevLoadings];
+            newLoadings[index] = true;
+            return newLoadings;
         });
-      }, 6000);
+
+        setTimeout(() => {
+            setLoadings((prevLoadings) => {
+                const newLoadings = [...prevLoadings];
+                newLoadings[index] = false;
+                return newLoadings;
+            });
+        }, 6000);
     };
 
     const handleClose = () => {
@@ -135,10 +135,11 @@ const AuthSignUpModal = (props: IProps) => {
         console.log('Failed:', errorInfo);
     };
 
+
     const prefixSelector = (
-        <Form.Item name="prefix" noStyle>
-            <Select defaultValue="" style={{ width: 95 }}>
-                <Option value=""><img src="/photo/flag.png" alt="flag" style={{ height: '20px', marginBottom: '-5px' }} />&nbsp;+84</Option>
+        <Form.Item name="prefix" noStyle >
+            <Select style={{ width: 95 }}>
+                <Select.Option value=""><img src="/photo/flag.png" alt="flag" style={{ height: '20px', marginBottom: '-5px' }} />&nbsp;+84</Select.Option>
             </Select>
         </Form.Item>
     );
@@ -184,10 +185,10 @@ const AuthSignUpModal = (props: IProps) => {
                         boxShadow: '0 0 10px 0 black' /* Đổ bóng với độ sâu 2px và màu đen có độ trong suốt 10% */
 
                     }}
-                    initialValues={{ remember: true }}
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
+                    initialValues={{ prefix: "" }}
                 >
                     <Form.Item style={{ display: 'flex', justifyContent: 'left', margin: '0px' }}>
                         <h1

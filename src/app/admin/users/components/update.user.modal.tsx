@@ -37,7 +37,6 @@ const UpdateUserModal = (props: IProps) => {
                 email: updateUserRecord.email,
                 name: updateUserRecord.name,
                 phoneNumber: updateUserRecord.phoneNumber,
-                role: updateUserRecord.role,
                 sponsorCode: updateUserRecord.sponsorCode
             })
         }

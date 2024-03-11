@@ -8,6 +8,7 @@ export default function AdminDashboard() {
         <div> T2M AdminDashboard </div>
         <div> T2M AdminDashboard </div>
       </>
-  
+
     )
   }
+

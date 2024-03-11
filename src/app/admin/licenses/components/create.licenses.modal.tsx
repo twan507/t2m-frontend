@@ -1,6 +1,7 @@
 'use client'
 import { sendRequest } from '@/utlis/api';
-import { Modal, Input, notification, Form, Select, Button, InputNumber } from 'antd';
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { Modal, Input, notification, Form, Select, Button, Upload } from 'antd';
 import { RuleObject } from 'antd/es/form';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -88,12 +89,20 @@ const CreatLicenseModal = (props: IProps) => {
         }
     };
 
+    // const [uploadStatus, setUploadStatus] = useState(true)
+    // const [confirmImage, setConfirmImage] = useState()
+    // const uploadImage = (values: any) => {
+    //     setUploadStatus(false)
+    //     setConfirmImage(values.file)
+    //     console.log(typeof(confirmImage))
+    // }
+
     const onFinish = async (values: any) => {
-        const { name, monthsDuration, accessLevel, price } = values
-        const data = { name, monthsDuration, accessLevel, price }
+        const { userEmail, product, discountCode, discountPercent, finalPrice } = values
+        const data = { userEmail, product, discountCode, discountPercent, finalPrice }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/products`,
+            url: `http://localhost:8000/api/v1/licenses`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data
@@ -120,6 +129,12 @@ const CreatLicenseModal = (props: IProps) => {
         }
     };
 
+    const normFile = (e: any) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        return e?.fileList;
+    };
 
     return (
         <Modal
@@ -205,9 +220,7 @@ const CreatLicenseModal = (props: IProps) => {
                     style={{ marginBottom: "5px" }}
                     label="Giá sau giảm"
                     name="finalPrice"
-                    rules={[
-                        { required: true, message: 'Giá sản phẩm không được để trống!' },
-                    ]}
+                    rules={[{ required: true, message: 'Giá sản phẩm không được để trống!' }]}
                 >
                     <Select
                         placeholder="Chọn Access Level cho sản phẩm"
@@ -215,8 +228,21 @@ const CreatLicenseModal = (props: IProps) => {
                         <Option value={finalPrice}>{finalPrice}</Option>
                     </Select>
                 </Form.Item>
+                {/* <Form.Item
+                    label="Ảnh xác nhận chuyển khoản"
+                    name="confirmImage"
+                    getValueFromEvent={normFile}
+                    style={{ marginTop: '10px' }}
+                >
+                    <Upload customRequest={uploadImage} listType="text"
+                    >
+                        {uploadStatus ? (
+                            <Button icon={<UploadOutlined />}>Click to upload</Button>
+                        ) : null}
+                    </Upload>
+                </Form.Item> */}
             </Form>
-        </Modal>
+        </Modal >
     )
 }
 

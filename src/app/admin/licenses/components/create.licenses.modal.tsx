@@ -89,17 +89,55 @@ const CreatLicenseModal = (props: IProps) => {
         }
     };
 
-    // const [uploadStatus, setUploadStatus] = useState(true)
-    // const [confirmImage, setConfirmImage] = useState()
-    // const uploadImage = (values: any) => {
-    //     setUploadStatus(false)
-    //     setConfirmImage(values.file)
-    //     console.log(typeof(confirmImage))
-    // }
+    const [uploadCheck, setUploadCheck] = useState(false)
+
+    const uploadImage = async (options: any) => {
+        const { file, onSuccess, onError, onProgress } = options;
+
+        // Tạo một đối tượng FormData mới và thêm file
+        const formData = new FormData();
+        formData.append('fileUpload', file);
+
+        try {
+            const response = await fetch('http://localhost:8000/api/v1/files/upload', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session?.access_token}`,
+                    'folder_type': 'licenses',
+                    'email': 'hello.com.vn'
+                },
+                body: formData,
+            });
+
+            if (response.ok) {
+                // Giả sử API trả về JSON với thông tin của file đã được tải lên
+                const data = await response.json();
+                // Gọi onSuccess với kết quả để thông báo cho component Upload biết
+                onSuccess(data, file);
+                // Đặt trạng thái thành công cho state upload
+                setUploadCheck(true)
+            } else {
+                // Nếu server trả về status lỗi
+                const error = await response.json();
+                onError(new Error(error.message));
+            }
+        } catch (error) {
+            // Xử lý lỗi từ fetch hoặc lỗi mạng
+            onError(error);
+        }
+    };
+
 
     const onFinish = async (values: any) => {
         const { userEmail, product, discountCode, discountPercent, finalPrice } = values
         const data = { userEmail, product, discountCode, discountPercent, finalPrice }
+
+        if (uploadCheck === false) {
+            return notification.error({
+                message: "Có lỗi xảy ra",
+                description: "Chưa tải lên hình ảnh xác thực"
+            })
+        }
 
         const res = await sendRequest<IBackendRes<any>>({
             url: `http://localhost:8000/api/v1/licenses`,
@@ -241,6 +279,18 @@ const CreatLicenseModal = (props: IProps) => {
                         ) : null}
                     </Upload>
                 </Form.Item> */}
+                <Form.Item
+                    label="Ảnh xác nhận chuyển khoản"
+                    name="confirmImage"
+                    getValueFromEvent={normFile}
+                    valuePropName="fileList"
+                    style={{ marginTop: '10px' }}
+                >
+                    <Upload customRequest={uploadImage} listType="text"
+                    >
+                        <Button icon={<UploadOutlined />}>Click to upload</Button>
+                    </Upload>
+                </Form.Item>
             </Form>
         </Modal >
     )

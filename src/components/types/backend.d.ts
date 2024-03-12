@@ -31,6 +31,7 @@ declare global {
         useCredentials?: boolean;
         headers?: any;
         nextOption?: any;
+        responseType?: any
     }
 
     interface IBackendRes<T> {

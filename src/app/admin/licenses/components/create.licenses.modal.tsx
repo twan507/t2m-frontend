@@ -28,10 +28,13 @@ const CreatLicenseModal = (props: IProps) => {
         setFinalPrice(0)
         setDiscountPercent(0)
         handleDiscountPrice(0)
+        setUploadCheck(false)
     }
 
     let tempInitial: string[] = []
     const [validSponsorsCode, setValidSponsorsCode] = useState(tempInitial)
+    const [validEmailList, setValidEmailList] = useState(tempInitial)
+    const [validProduct, setValidProduct] = useState(tempInitial)
     const [maxDiscount, setMaxDiscount] = useState(0)
     const [finalPrice, setFinalPrice] = useState(0)
     const [discountPercent, setDiscountPercent] = useState(0)
@@ -47,6 +50,15 @@ const CreatLicenseModal = (props: IProps) => {
             method: "GET",
         })
         setValidSponsorsCode(res.data)
+    }
+
+    const getProductList = async () => {
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `http://localhost:8000/api/v1/products/active-list`,
+            method: "GET",
+            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+        })
+        setValidProduct(res.data)
     }
 
     const getMaxDiscount = async (code: string) => {
@@ -69,11 +81,22 @@ const CreatLicenseModal = (props: IProps) => {
         try { setFinalPrice(res.data.price - (res.data.price * discountPercent / 100)) } catch (error) { }
     }
 
+    const getEmailList = async () => {
+        const res = await sendRequest<IBackendRes<any>>({
+            url: `http://localhost:8000/api/v1/users/email-list`,
+            method: "GET",
+            headers: { 'Authorization': `Bearer ${session?.access_token}` }
+        })
+        setValidEmailList(res.data)
+    }
 
     useEffect(() => {
         getSponsorsCodeList()
-    }, [])
+        getEmailList()
+        getProductList()
+    }, [session])
 
+    // Hàm kiểm tra mã giới hiệu
     const validateSponsorsCode = (_: RuleObject, value: any) => {
         if (!value || validSponsorsCode.includes(value)) {
             return Promise.resolve();
@@ -81,18 +104,37 @@ const CreatLicenseModal = (props: IProps) => {
         return Promise.reject(new Error('Mã giới thiệu không tồn tại!'));
     };
 
-    //Hàm kiểm tra email
-    const validateEmail = async (_: RuleObject, value: string) => {
+    //Hàm kiểm tra email xem có tồn tại không
+    const validateEmail = async (_: RuleObject, value: any) => {
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+        // Kiểm tra định dạng email
         if (value && !emailRegex.test(value)) {
             throw new Error('Email không đúng định dạng.');
         }
+
+        // Kiểm tra email có tồn tại trong danh sách cho phép không
+        if (value && !validEmailList.includes(value)) {
+            throw new Error('Người dùng không tồn tại!');
+        }
+
+        // Nếu email hợp lệ và tồn tại trong danh sách, trả về Promise.resolve
+        return Promise.resolve();
     };
+
 
     const [uploadCheck, setUploadCheck] = useState(false)
 
     const uploadImage = async (options: any) => {
-        const { file, onSuccess, onError, onProgress } = options;
+        const { file, onSuccess, onError, onProgress } = options
+
+        if (!form.getFieldValue('userEmail')) {
+            onError(new Error('Chưa điền Email người dùng'))
+            return notification.error({
+                message: "Có lỗi xảy ra",
+                description: "Chưa điền Email người dùng"
+            })
+        }
 
         // Tạo một đối tượng FormData mới và thêm file
         const formData = new FormData();
@@ -104,7 +146,7 @@ const CreatLicenseModal = (props: IProps) => {
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`,
                     'folder_type': 'licenses',
-                    'email': 'hello.com.vn'
+                    'email': `${form.getFieldValue('userEmail')}`
                 },
                 body: formData,
             });
@@ -163,8 +205,15 @@ const CreatLicenseModal = (props: IProps) => {
     const validateProductName = async (_: RuleObject, value: string) => {
         const productRegex = /^[A-Z0-9]{1,10}$/;
         if (value && !productRegex.test(value.split('@')[0])) {
-            throw new Error('Email không đúng định dạng. Tối đa 10 kí tự bao gồm chữ hoa hoặc số.');
+            throw new Error('Tên sản phẩm không đúng định dạng. Tối đa 10 kí tự bao gồm chữ hoa hoặc số.');
         }
+
+        if (value && !validProduct.includes(value)) {
+            throw new Error('Sản phẩm không tồn tại!');
+        }
+
+        // Nếu email hợp lệ và tồn tại trong danh sách, trả về Promise.resolve
+        return Promise.resolve();
     };
 
     const normFile = (e: any) => {
@@ -174,14 +223,21 @@ const CreatLicenseModal = (props: IProps) => {
         return e?.fileList;
     };
 
+    const [loading, setLoading] = useState(false);
+
     return (
         <Modal
             title="Tạo mới License"
             open={isCreateModalOpen}
-            onOk={() => form.submit()}
+            onOk={() => {
+                setLoading(true)
+                form.submit()
+            }}
             onCancel={handleClose}
-            maskClosable={false}>
-
+            maskClosable={false}
+            confirmLoading={loading}
+            okButtonProps={{ loading: loading }}
+        >
             <Form
                 name="basic"
                 onFinish={onFinish}
@@ -266,19 +322,6 @@ const CreatLicenseModal = (props: IProps) => {
                         <Option value={finalPrice}>{finalPrice}</Option>
                     </Select>
                 </Form.Item>
-                {/* <Form.Item
-                    label="Ảnh xác nhận chuyển khoản"
-                    name="confirmImage"
-                    getValueFromEvent={normFile}
-                    style={{ marginTop: '10px' }}
-                >
-                    <Upload customRequest={uploadImage} listType="text"
-                    >
-                        {uploadStatus ? (
-                            <Button icon={<UploadOutlined />}>Click to upload</Button>
-                        ) : null}
-                    </Upload>
-                </Form.Item> */}
                 <Form.Item
                     label="Ảnh xác nhận chuyển khoản"
                     name="confirmImage"
@@ -286,9 +329,11 @@ const CreatLicenseModal = (props: IProps) => {
                     valuePropName="fileList"
                     style={{ marginTop: '10px' }}
                 >
-                    <Upload customRequest={uploadImage} listType="text"
+                    <Upload customRequest={uploadImage} listType="picture"
                     >
-                        <Button icon={<UploadOutlined />}>Click to upload</Button>
+                        {!uploadCheck ? (
+                            <Button type="dashed" style={{ height: '35px', width: '470px' }} icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
+                        ) : null}
                     </Upload>
                 </Form.Item>
             </Form>

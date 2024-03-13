@@ -31,7 +31,7 @@ const CreateUserModal = (props: IProps) => {
 
     useEffect(() => {
         getSponsorsCodeList()
-    }, [])
+    }, [session])
 
     const validateSponsorsCode = (_: RuleObject, value: any) => {
         if (!value || validSponsorsCode.includes(value)) {

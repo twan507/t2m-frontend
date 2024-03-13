@@ -15,6 +15,7 @@ import {
 
 import CreatLicenseModal from './components/create.licenses.modal';
 import UpdateLicenseModal from './components/update.licenses.modal';
+import ImageLicenseModal from './components/show.images.modal';
 
 
 interface DataType {
@@ -24,10 +25,11 @@ interface DataType {
   daysLeft: number;
   userEmail: string;
   accessLevel: number;
-  imageConfirm: any;
+  discountCode: string;
+  discountPercent: number;
+  finalPrice: number;
   isActive: boolean;
   createdBy: string;
-  createdAt: string;
 }
 
 
@@ -43,6 +45,7 @@ const PageLicenses: React.FC = () => {
   const [listUsers, setListUsers] = useState([])
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [updateLicenseRecord, setUpdateLicenseRecord] = useState()
 
@@ -260,8 +263,11 @@ const PageLicenses: React.FC = () => {
       render: (value, record) => new Date(value).toLocaleDateString('en-GB'),
     },
     {
-      title: 'Còn lại (Ngày)',
+      title: 'Ngày còn lại',
       dataIndex: 'daysLeft',
+      sorter: (a, b) => a.daysLeft - b.daysLeft,
+      sortDirections: ['descend', 'ascend'],
+      render: (value) => Math.round(value),
     },
     {
       title: 'Người dùng',
@@ -273,26 +279,39 @@ const PageLicenses: React.FC = () => {
       dataIndex: 'accessLevel',
       render: (value) => `Level ${value}`
     },
-    // {
-    //   title: 'Giá gốc',
-    //   dataIndex: 'price',
-    //   ...getColumnSearchProps('price'),
-    //   render: (text) => {
-    //     return text.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-    //   },
-    // },
+    {
+      title: 'Mã giảm giá',
+      dataIndex: 'discountCode',
+      ...getColumnSearchProps('discountCode'),
+    },
+    {
+      title: 'Chiết khấu',
+      dataIndex: 'discountPercent',
+      render: (value) => `${value}%`
+    },
+    {
+      title: 'Giá sau giảm',
+      dataIndex: 'finalPrice',
+      render: (text) => {
+        return text.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+      },
+    },
+    {
+      title: 'Hình ảnh xác thực',
+      render: (value, record) => <Button type='primary' ghost size='small'
+        onClick={() => {
+          setIsImageModalOpen(true)
+          setUpdateLicenseRecord(record)
+        }}
+      >
+        Show
+      </Button>
+    },
     {
       title: 'Người tạo',
       dataIndex: 'createdBy',
       ...getColumnSearchProps('createdBy'),
       render: (value: any, record) => value?.email
-    },
-    {
-      title: 'Ngày tạo',
-      dataIndex: 'createdAt',
-      sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      sortDirections: ['descend', 'ascend'],
-      render: (value, record) => new Date(value).toLocaleDateString('en-GB'),
     },
     {
       title: 'Trạng thái',
@@ -365,6 +384,12 @@ const PageLicenses: React.FC = () => {
         getData={getData}
         isUpdateModalOpen={isUpdateModalOpen}
         setIsUpdateModalOpen={setIsUpdateModalOpen}
+        updateLicenseRecord={updateLicenseRecord}
+      />
+
+      <ImageLicenseModal
+        isImageModalOpen={isImageModalOpen}
+        setIsImageModalOpen={setIsImageModalOpen}
         updateLicenseRecord={updateLicenseRecord}
       />
 

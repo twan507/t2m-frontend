@@ -6,12 +6,10 @@ export default async function AdminPage() {
 
   const session = await getServerSession(authOptions)
   if (session) {
-    redirect("/admin/dashboard")
-  } else {
-    redirect("/auth/signin")
+    if (session.user.role === "T2M ADMIN") {
+      redirect("/admin/dashboard")
+    } else {
+      redirect("/")
+    }
   }
 }
-
-
-
-

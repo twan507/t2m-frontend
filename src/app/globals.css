@@ -36,7 +36,7 @@ footer {
 
 /* Đường dẫn của thanh cuộn */
 ::-webkit-scrollbar-track {
-    border-radius: 10px; 
+    background: #000000
 }
 
 /* Bản thân thanh cuộn */

@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react';
 import { Button, Form, Input, Divider, Modal, notification } from 'antd';
-import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import AuthSignUpModal from './signup.modal';
 import ForgetPasswordModal from './forgetpassword.modal';
@@ -165,6 +164,7 @@ const AuthSignInModal = (props: IProps) => {
                                 fontWeight: 'bold', // làm chữ đậm
                                 fontSize: 17,
                             }}
+                            onClick={() => setSignInModalOpen(false)}
                         >
                             Sử dụng phiên bản miễn phí
                         </Button>

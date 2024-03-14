@@ -16,6 +16,7 @@ import {
 import CreatLicenseModal from './components/create.licenses.modal';
 import UpdateLicenseModal from './components/update.licenses.modal';
 import ImageLicenseModal from './components/show.images.modal';
+import { useRouter } from 'next/navigation';
 
 
 interface DataType {
@@ -37,7 +38,16 @@ type DataIndex = keyof DataType;
 
 
 const PageLicenses: React.FC = () => {
+  
   const { data: session } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!session || session.user.role !== "T2M ADMIN") {
+      router.push("/");
+    }
+  }, [session, router]);
+
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<any>(null);

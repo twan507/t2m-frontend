@@ -1,10 +1,10 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Divider, Modal, notification, Avatar } from 'antd';
-import { signIn, useSession } from 'next-auth/react';
-import { UserOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal, notification, Avatar } from 'antd';
+import { useSession } from 'next-auth/react';
 import { sendRequest } from '@/utlis/api';
 import ChangePasswordModal from './changepassword.modal';
+import { useRouter } from 'next/navigation';
 
 
 interface IProps {
@@ -15,6 +15,7 @@ interface IProps {
 const UserInfoModal = (props: IProps) => {
 
     const [form] = Form.useForm()
+    const router = useRouter();
     const { data: session } = useSession()
 
     const { isUserInfoModal, setUserInfoModalOpen } = props
@@ -216,6 +217,11 @@ const UserInfoModal = (props: IProps) => {
                                 </div>
                             )}
                         </div>
+                        {session?.user.role === "T2M ADMIN" && (
+                            <Button type='primary' style={{ marginLeft: '70px' }} onClick={() => router.push('/admin')}>
+                                ADMIN PORTAL
+                            </Button>
+                        )}
                     </div>
 
                     <Form.Item
@@ -249,7 +255,7 @@ const UserInfoModal = (props: IProps) => {
                             <Button
                                 type='primary'
                                 style={{ fontSize: 16, marginRight: '10px' }}
-                                onClick={()=>{
+                                onClick={() => {
                                     setIsChangePasswordOpen(true)
                                     setUserInfoModalOpen(false)
                                 }}

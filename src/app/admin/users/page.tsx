@@ -20,6 +20,7 @@ import ResetPasswordModal from './components/reset.password.modal';
 import ManageCTVModal from './components/manege.ctv.modal';
 import UpdateUserModal from './components/update.user.modal';
 import CreateUserModal from './components/create.user.modal';
+import { useRouter } from 'next/navigation';
 
 interface DataType {
   email: string;
@@ -35,7 +36,16 @@ interface DataType {
 type DataIndex = keyof DataType;
 
 const PageUsers: React.FC = () => {
+
   const { data: session } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!session || session.user.role !== "T2M ADMIN") {
+      router.push("/");
+    }
+  }, [session, router]);
+
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<any>(null);

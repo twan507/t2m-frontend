@@ -67,10 +67,6 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false)
   const [isUserInfoModal, setUserInfoModalOpen] = useState(false)
 
-
-  //@ts-ignore
-  const path = children?.props.childProp?.segment
-
   const sider_menu = [
     {
       label: (
@@ -209,7 +205,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
             style={{ background: '#0a0a0a' }}
             theme="dark"
             mode="inline"
-            defaultSelectedKeys={[path]}
+            defaultSelectedKeys={['dashboard']}
             items={sider_menu}
           />
           <div>
@@ -261,7 +257,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
                 ...(!session ? [
                   {
                     label: <Button ghost type='primary' onClick={() => setSignInModalOpen(true)}
-                      style={{ width: '120px', marginLeft: 'calc(100vw - 560px)', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
+                      style={{ width: '120px', marginLeft: collapsed ? 'calc(100vw - 550px)' : 'calc(100vw - 700px)', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
                     >
                       Đăng nhập
                     </Button>,

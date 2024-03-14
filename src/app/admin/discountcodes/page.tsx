@@ -15,6 +15,7 @@ import {
 
 import CreatDiscountCodeModal from './components/create.discountcode.modal';
 import UpdateDiscountCodeModal from './components/update.discountcode.modal';
+import { useRouter } from 'next/navigation';
 
 
 interface DataType {
@@ -27,12 +28,18 @@ interface DataType {
   createdAt: string;
 }
 
-
 type DataIndex = keyof DataType;
-
 
 const PageDiscountCodes: React.FC = () => {
   const { data: session } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!session || session.user.role !== "T2M ADMIN") {
+      router.push("/");
+    }
+  }, [session, router]);
+
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef<any>(null);

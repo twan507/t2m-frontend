@@ -279,12 +279,12 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
                 {
                   label: <Link onClick={() => { window.location.href = "/" }} href='/' />,
                   key: 'home',
-                  icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '160px', height: 'auto', paddingTop: '25px', marginLeft: '180px' }} />
+                  icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '160px', height: 'auto', paddingTop: '25px', marginLeft: collapsed ? '180px' : '100px' }} />
                 },
                 ...(!session ? [
                   {
                     label: <Button ghost type='primary' onClick={() => setSignInModalOpen(true)}
-                      style={{ width: '120px', marginLeft: collapsed ? 'calc(100vw - 910px)' : 'calc(100vw - 990px)', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
+                      style={{ width: '120px', marginLeft: 'calc(100vw - 910px)', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
                     >
                       Đăng nhập
                     </Button>,

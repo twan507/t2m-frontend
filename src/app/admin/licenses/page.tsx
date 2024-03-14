@@ -297,7 +297,7 @@ const PageLicenses: React.FC = () => {
       },
     },
     {
-      title: 'Hình ảnh xác thực',
+      title: 'Hình ảnh',
       render: (value, record) => <Button type='primary' ghost size='small'
         onClick={() => {
           setIsImageModalOpen(true)

@@ -317,7 +317,6 @@ const CreatLicenseModal = (props: IProps) => {
                     rules={[{ required: true, message: 'Giá sản phẩm không được để trống!' }]}
                 >
                     <Select
-                        placeholder="Chọn Access Level cho sản phẩm"
                     >
                         <Option value={finalPrice}>{finalPrice}</Option>
                     </Select>

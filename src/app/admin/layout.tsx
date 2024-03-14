@@ -8,8 +8,6 @@ import {
   UserOutlined,
   FileDoneOutlined,
   ProductOutlined,
-  UserSwitchOutlined,
-  HomeOutlined,
   FallOutlined,
   FundViewOutlined
 } from '@ant-design/icons';
@@ -19,6 +17,7 @@ import { sendRequest } from '@/utlis/api';
 import { useRouter } from 'next/navigation';
 import AuthSignInModal from '@/components/auth/signin.modal';
 import AuthSignUpModal from '@/components/auth/signup.modal';
+import UserInfoModal from '@/components/auth/userinfo.modal';
 
 const { Header, Footer, Content } = Layout;
 
@@ -66,6 +65,8 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
 
   const [isSignInModalOpen, setSignInModalOpen] = useState(false)
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false)
+  const [isUserInfoModal, setUserInfoModalOpen] = useState(false)
+
 
   //@ts-ignore
   const path = children?.props.childProp?.segment
@@ -127,6 +128,10 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
         isSignUpModalOpen={isSignUpModalOpen}
         setSignUpModalOpen={setSignUpModalOpen}
       />
+      <UserInfoModal
+        isUserInfoModal={isUserInfoModal}
+        setUserInfoModalOpen={setUserInfoModalOpen}
+      />
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth='55px' width='200px'
           style={{
@@ -143,7 +148,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
             type="text"
             onClick={() => {
               // session ? '' : router.push("/auth/signin")
-              session ? '' : setSignInModalOpen(true)
+              session ? setUserInfoModalOpen(true) : setSignInModalOpen(true)
             }}
             block={true}
             style={{

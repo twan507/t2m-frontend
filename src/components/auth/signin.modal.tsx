@@ -1,9 +1,10 @@
 'use client'
 import React, { useState } from 'react';
-import { Button, Form, Input, Divider, Modal } from 'antd';
+import { Button, Form, Input, Divider, Modal, notification } from 'antd';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import AuthSignUpModal from './signup.modal';
+import ForgetPasswordModal from './forgetpassword.modal';
 
 
 interface IProps {
@@ -22,6 +23,7 @@ const AuthSignInModal = (props: IProps) => {
 
     const { isSignInModalOpen, setSignInModalOpen } = props
     const [isSignUpModalOpen, setSignUpModalOpen] = useState(false)
+    const [isForgetPasswordOpen, setIsForgetPasswordOpen] = useState(false)
 
     const handleClose = () => {
         form.resetFields()
@@ -38,7 +40,9 @@ const AuthSignInModal = (props: IProps) => {
         if (!res?.error) {
             window.location.href = "/"
         } else {
-            alert(res.error)
+            notification.error({
+                message: res.error
+            })
         }
     };
 
@@ -67,6 +71,10 @@ const AuthSignInModal = (props: IProps) => {
             <AuthSignUpModal
                 isSignUpModalOpen={isSignUpModalOpen}
                 setSignUpModalOpen={setSignUpModalOpen}
+            />
+            <ForgetPasswordModal
+                isForgetPasswordOpen={isForgetPasswordOpen}
+                setIsForgetPasswordOpen={setIsForgetPasswordOpen}
             />
             <Modal
                 className="custom-modal"
@@ -124,6 +132,10 @@ const AuthSignInModal = (props: IProps) => {
                         <Button
                             type='link'
                             style={{ fontSize: 14, fontStyle: 'italic', textDecoration: 'underline' }}
+                            onClick={() => {
+                                setIsForgetPasswordOpen(true)
+                                setSignInModalOpen(false)
+                            }}
                         >
                             Quên mật khẩu?
                         </Button>
@@ -174,7 +186,7 @@ const AuthSignInModal = (props: IProps) => {
                         </p>
                     </Form.Item>
                 </Form>
-            </Modal>
+            </Modal >
         </>
     )
 }

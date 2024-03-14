@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react';
-import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { CheckOutlined, CheckSquareOutlined, CloseOutlined, CloseSquareOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { TableColumnType, TableProps } from 'antd';
 import { Button, Input, Popconfirm, Space, Table, Tag, notification } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
@@ -27,6 +27,7 @@ interface DataType {
   phoneNumber: string;
   role: string;
   affiliateCode: string;
+  license: string
   sponsorCode: string;
   createdAt: string;
 }
@@ -246,6 +247,21 @@ const PageUsers: React.FC = () => {
           {value}
         </Tag>
       )
+    },
+    {
+      title: 'License',
+      dataIndex: 'license',
+      render: (value, record) => (
+        <Tag color={value ? 'green' : 'volcano'}>
+          {value ? <CheckOutlined /> : <CloseOutlined />}
+        </Tag>
+      ),
+      sorter: (a, b) => {
+        const aValue = a.license ? 1 : 0;
+        const bValue = b.license ? 1 : 0;
+        return aValue - bValue;
+      },
+      sortDirections: ['descend', 'ascend']
     },
     {
       title: 'Ngày tạo',

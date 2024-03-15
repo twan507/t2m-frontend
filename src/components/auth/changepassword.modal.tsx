@@ -46,7 +46,7 @@ const ChangePasswordModal = (props: IProps) => {
         const data = { currentPassword, newPassword, confirmPassword }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/change-password`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/change-password`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data

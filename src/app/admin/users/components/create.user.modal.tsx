@@ -23,7 +23,7 @@ const CreateUserModal = (props: IProps) => {
 
     const getSponsorsCodeList = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/discountcodes/sponsorcode`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/discountcodes/sponsorcode`,
             method: "GET",
         })
         setValidSponsorsCode(res.data)
@@ -78,7 +78,7 @@ const CreateUserModal = (props: IProps) => {
         const data = { name, email, password, phoneNumber, sponsorCode }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data

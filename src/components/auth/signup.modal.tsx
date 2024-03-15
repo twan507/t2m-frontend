@@ -58,7 +58,7 @@ const AuthSignUpModal = (props: IProps) => {
 
     const getSponsorsCodeList = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/discountcodes/sponsorcode`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/discountcodes/sponsorcode`,
             method: "GET",
         })
         setValidSponsorsCode(res.data)
@@ -113,7 +113,7 @@ const AuthSignUpModal = (props: IProps) => {
         const data = { name, email, password, confirmPassword, phoneNumber, sponsorCode }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/auth/register`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`,
             method: "POST",
             body: data
         })

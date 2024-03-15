@@ -67,7 +67,7 @@ const PageUsers: React.FC = () => {
 
   const getData = async () => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/users`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`,
       method: "GET",
       queryParams: { current: meta.current, pageSize: meta.pageSize },
       headers: { 'Authorization': `Bearer ${session?.access_token}` }
@@ -78,7 +78,7 @@ const PageUsers: React.FC = () => {
 
   const handleOnChange = async (current: number, pageSize: number) => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/users`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`,
       method: "GET",
       queryParams: { current: current, pageSize: pageSize },
       headers: { 'Authorization': `Bearer ${session?.access_token}` }
@@ -90,7 +90,7 @@ const PageUsers: React.FC = () => {
   const confirmDelete = async (id: any) => {
 
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/users/${id}`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${id}`,
       method: "DELETE",
       headers: { 'Authorization': `Bearer ${session?.access_token}` },
     })

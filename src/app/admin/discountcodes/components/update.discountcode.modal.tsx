@@ -24,21 +24,21 @@ const UpdateDiscountCodeModal = (props: IProps) => {
         const data = { code, maxDiscount }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/discountcodes/${updateDiscountCodeRecord._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/discountcodes/${updateDiscountCodeRecord._id}`,
             method: "PUT",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data
         })
 
         const res_user = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/find-by-email`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/find-by-email`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: { email: updateDiscountCodeRecord.userEmail }
         })
 
         await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/${res_user.data._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${res_user.data._id}`,
             method: "PATCH",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: { affiliateCode: updateDiscountCodeRecord.isActive ? code : '' }

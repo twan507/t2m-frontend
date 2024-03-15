@@ -23,7 +23,7 @@ const CreatDiscountCodeModal = (props: IProps) => {
         const data = { code, maxDiscount }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/discountcodes`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/discountcodes`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data

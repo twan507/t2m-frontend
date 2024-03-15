@@ -33,7 +33,7 @@ const ImageLicenseModal = (props: IProps) => {
 
     const getImage = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/files`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/files`,
             method: "GET",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             queryParams: {
@@ -66,7 +66,7 @@ const ImageLicenseModal = (props: IProps) => {
                     <Button
                         danger
                         icon={<StopOutlined />}
-                        style={{width: '100%'}}
+                        style={{ width: '100%' }}
                     >
                         Không tìm thấy hình ảnh
                     </Button>

@@ -53,7 +53,7 @@ const ResetPasswordModal = (props: IProps) => {
         const { newPassword, confirmPassword } = values
         const data = { newPassword, confirmPassword }
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/admin-change-password`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/admin-change-password`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: { email: updateUserRecord.email, newPassword: data.newPassword, confirmPassword: data.confirmPassword }

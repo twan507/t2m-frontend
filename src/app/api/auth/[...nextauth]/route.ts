@@ -16,7 +16,7 @@ export const authOptions: AuthOptions = {
             async authorize(credentials, req) {
 
                 const res = await sendRequest<IBackendRes<JWT>>({
-                    url: "http://localhost:8000/api/v1/auth/login",
+                    url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
                     method: "POST",
                     body: {
                         username: credentials?.username,
@@ -32,7 +32,7 @@ export const authOptions: AuthOptions = {
         })
     ],
     session: {
-        maxAge: 60*60*24,
+        maxAge: 60 * 60 * 24,
     },
     callbacks: {
         jwt({ token, user, account, profile, trigger }) {
@@ -51,7 +51,7 @@ export const authOptions: AuthOptions = {
         async session({ session, token, user }) {
 
             const sessionLimit = await sendRequest<IBackendRes<JWT>>({
-                url: "http://localhost:8000/api/v1/auth/session-limit",
+                url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/session-limit`,
                 method: "POST",
                 body: {
                     //@ts-ignore

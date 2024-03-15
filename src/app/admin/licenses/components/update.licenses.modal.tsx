@@ -28,7 +28,7 @@ const UpdateLicenseModal = (props: IProps) => {
 
     const getProductList = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/products/active-list`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/active-list`,
             method: "GET",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
         })
@@ -37,7 +37,7 @@ const UpdateLicenseModal = (props: IProps) => {
 
     const getMaxDiscount = async (code: string) => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/discountcodes/find-by-code`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/discountcodes/find-by-code`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: { code: code }
@@ -47,7 +47,7 @@ const UpdateLicenseModal = (props: IProps) => {
 
     const getFinalPrice = async (name: string) => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/products/find-by-product`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/find-by-product`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: { name: name }
@@ -65,7 +65,7 @@ const UpdateLicenseModal = (props: IProps) => {
         const data = { name, monthsDuration, accessLevel, price }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/products/${updateLicenseRecord._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${updateLicenseRecord._id}`,
             method: "PUT",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data
@@ -117,7 +117,7 @@ const UpdateLicenseModal = (props: IProps) => {
 
     const getSponsorsCodeList = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/discountcodes/sponsorcode`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/discountcodes/sponsorcode`,
             method: "GET",
         })
         setValidSponsorsCode(res.data)

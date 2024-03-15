@@ -1,17 +1,22 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+'use client'
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
-export default async function AdminPage() {
+export default function AdminPage() {
 
-  const session = await getServerSession(authOptions)
-  if (session) {
-    if (session.user.role === "T2M ADMIN") {
-      redirect("/admin/dashboard")
+  const { data: session } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (session) {
+      if (session.user.role === "T2M ADMIN") {
+        router.push("/admin/dashboard")
+      }
     }
-  }
+  }, [session])
 
   return (
-    <div> hello </div>
+    <div></div>
   )
 }

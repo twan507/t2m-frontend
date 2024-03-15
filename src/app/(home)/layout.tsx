@@ -259,7 +259,7 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
                 icon={<LogoutOutlined />}
                 onClick={async () => {
                   await sendRequest<IBackendRes<any>>({
-                    url: `http://localhost:8000/api/v1/auth/logout`,
+                    url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/logout`,
                     method: "POST",
                     headers: { 'Authorization': `Bearer ${session?.access_token}` }
                   })

@@ -59,7 +59,7 @@ const ForgetPasswordModal = (props: IProps) => {
         const data = { email, token, newPassword, confirmPassword }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/forget-password`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/forget-password`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data
@@ -89,7 +89,7 @@ const ForgetPasswordModal = (props: IProps) => {
         }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/send-password-token`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/send-password-token`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: { email: form.getFieldValue('email') }
@@ -169,7 +169,6 @@ const ForgetPasswordModal = (props: IProps) => {
                 closeIcon={null}
             >
                 <Form
-
                     form={form}
                     layout='vertical'
                     style={{

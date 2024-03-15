@@ -24,7 +24,7 @@ const UpdateProductModal = (props: IProps) => {
         const data = { name, monthsDuration, accessLevel, price }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/products/${updateProductRecord._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${updateProductRecord._id}`,
             method: "PUT",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data

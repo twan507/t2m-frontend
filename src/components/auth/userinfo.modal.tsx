@@ -24,7 +24,7 @@ const UserInfoModal = (props: IProps) => {
 
     const getUser = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/${session?.user._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${session?.user._id}`,
             method: "GET",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
         });
@@ -89,7 +89,7 @@ const UserInfoModal = (props: IProps) => {
         const data = { name, phoneNumber }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/user-change-info`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/user-change-info`,
             method: "PUT",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: data

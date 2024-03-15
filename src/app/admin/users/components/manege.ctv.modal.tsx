@@ -64,7 +64,7 @@ const ManageCTVModal = (props: IProps) => {
         const data = { email, ctvCode }
 
         const res = await sendRequest<IBackendRes<any>>({
-            url: `http://localhost:8000/api/v1/users/manage-ctv`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/manage-ctv`,
             method: "POST",
             headers: { 'Authorization': `Bearer ${session?.access_token}` },
             body: { email: data.email, ctvCode: data.ctvCode }

@@ -31,7 +31,7 @@ interface DataType {
 type DataIndex = keyof DataType;
 
 const PageProducts: React.FC = () => {
-  
+
   const { data: session } = useSession()
   const router = useRouter()
 
@@ -60,7 +60,7 @@ const PageProducts: React.FC = () => {
 
   const getData = async () => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/products`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products`,
       method: "GET",
       queryParams: { current: meta.current, pageSize: meta.pageSize },
       headers: { 'Authorization': `Bearer ${session?.access_token}` }
@@ -71,7 +71,7 @@ const PageProducts: React.FC = () => {
 
   const handleOnChange = async (current: number, pageSize: number) => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/products`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products`,
       method: "GET",
       queryParams: { current: current, pageSize: pageSize },
       headers: { 'Authorization': `Bearer ${session?.access_token}` }
@@ -82,7 +82,7 @@ const PageProducts: React.FC = () => {
 
   const confirmDelete = async (id: any) => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/products/${id}`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${id}`,
       method: "DELETE",
       headers: { 'Authorization': `Bearer ${session?.access_token}` },
     })
@@ -102,7 +102,7 @@ const PageProducts: React.FC = () => {
 
   const changeActive = async (record: any, status: boolean) => {
     const res = await sendRequest<IBackendRes<any>>({
-      url: `http://localhost:8000/api/v1/products/${record._id}`,
+      url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${record._id}`,
       method: "PATCH",
       headers: { 'Authorization': `Bearer ${session?.access_token}` },
       body: { status: status }

@@ -31,7 +31,7 @@
     /* Điều này sẽ căn các items theo chiều dọc ở đầu trên */
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 20px 20px;
 }
 
 .footer-section-left {
@@ -230,7 +230,7 @@
 
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
     .footer-inner {
         display: none;
     }

@@ -26,7 +26,7 @@ const Page2 = () => {
 
     if (currentWidth < iframeWidth) {
       const widthDecrease = iframeWidth - currentWidth;
-      newHeight -= widthDecrease * (iframeHeight / iframeWidth + 0.18);
+      newHeight -= widthDecrease * (iframeHeight / iframeWidth);
     }
 
     setIframeHeight(newHeight);
@@ -36,7 +36,7 @@ const Page2 = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowOverlay(false);
-    }, 2000);
+    }, 3000);
 
     window.addEventListener('resize', updateIframeSize);
     updateIframeSize(); // Gọi ngay khi component mount để đảm bảo kích thước iframe được điều chỉnh ngay lập tức
@@ -58,12 +58,14 @@ const Page2 = () => {
       {showOverlay && (
         <div style={{
           position: 'fixed', // Sử dụng fixed để overlay che toàn bộ nội dung
-          top: 60,
-          left: 60,
+          top: 0,
+          left: 0,
           zIndex: 1000, // Đảm bảo overlay nằm trên cùng
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          background: 'black',
+          height: '100vh'
         }}>
           <img src="/photo/gif_loading.gif" alt="Loading" width='100%' />
         </div>

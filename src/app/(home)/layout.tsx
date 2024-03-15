@@ -6,13 +6,12 @@ import {
   DoubleRightOutlined,
   LogoutOutlined,
   UserOutlined,
-  FileDoneOutlined,
-  ProductOutlined,
-  FallOutlined,
   FundViewOutlined,
   SearchOutlined,
   LineChartOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, Button, Avatar, notification } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
@@ -70,6 +69,25 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
   const [isSignInModalOpen, setSignInModalOpen] = useState(false)
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false)
   const [isUserInfoModal, setUserInfoModalOpen] = useState(false)
+  const [mobileLayout, setmMobileLayout] = useState(false);
+
+  const toggleMobileLayout = () => {
+    const currentWidth = window.innerWidth;
+    if (currentWidth > 800) {
+      setmMobileLayout(false)
+    } else {
+      setmMobileLayout(true)
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', toggleMobileLayout);
+    toggleMobileLayout();
+
+    return () => {
+      window.removeEventListener('resize', toggleMobileLayout);
+    };
+  }, []);
 
   const sider_menu = [
     {
@@ -154,7 +172,9 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
         setUserInfoModalOpen={setUserInfoModalOpen}
       />
       <Layout>
-        <Sider trigger={null} collapsible collapsed={collapsed} collapsedWidth='55px' width='215px'
+        <Sider trigger={null} collapsible collapsed={collapsed}
+          collapsedWidth={mobileLayout ? '0px' : '55px'}
+          width='215px'
           style={{
             background: '#000000',
             borderRight: '2px solid #303030',
@@ -168,7 +188,6 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
           <Button
             type="text"
             onClick={() => {
-              // session ? '' : router.push("/auth/signin")
               session ? setUserInfoModalOpen(true) : setSignInModalOpen(true)
             }}
             block={true}
@@ -276,15 +295,33 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
               mode="horizontal"
               selectedKeys={[]}
               items={[
-                {
-                  label: <Link onClick={() => { window.location.href = "/" }} href='/' />,
-                  key: 'home',
-                  icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '160px', height: 'auto', paddingTop: '25px', marginLeft: collapsed ? '180px' : '100px' }} />
-                },
+                // Kiểm tra điều kiện mobileLayout ngay ở đầu để quyết định phần tử hiển thị
+                ...(mobileLayout ? [
+                  {
+                    label: <a onClick={() => setCollapsed(!collapsed)} />,
+                    key: 'home-mobile', // Sử dụng một key khác biệt cho mobile layout
+                    icon: collapsed ? <MenuUnfoldOutlined style={{ fontSize: '20px' }} /> : <MenuFoldOutlined style={{ fontSize: '20px' }} />
+                  },
+                  {
+                    label: <Link onClick={() => { window.location.href = "/" }} href='/' />,
+                    key: 'home',
+                    icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '140px', height: 'auto', paddingTop: '25px' }} />
+                  }
+                ] : [
+                  {
+                    label: <Link onClick={() => { window.location.href = "/" }} href='/' />,
+                    key: 'home',
+                    icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '160px', height: 'auto', paddingTop: '25px', marginLeft: collapsed ? '180px' : '100px' }} />
+                  }]),
                 ...(!session ? [
                   {
                     label: <Button ghost type='primary' onClick={() => setSignInModalOpen(true)}
-                      style={{ width: '120px', marginLeft: 'calc(100vw - 910px)', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
+                      style={{
+                        width: mobileLayout ? '100px' : '120px',
+                        marginLeft: mobileLayout ? 'calc(100vw - 500px)' : 'calc(100vw - 910px)',
+                        fontWeight: 'bold',
+                        fontFamily: 'Helvetica Neue, sans-serif'
+                      }}
                     >
                       Đăng nhập
                     </Button>,
@@ -292,7 +329,12 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
                   },
                   {
                     label: <Button type='primary' onClick={() => setSignUpModalOpen(true)}
-                      style={{ width: '120px', marginLeft: '-20px', fontWeight: 'bold', fontFamily: 'Helvetica Neue, sans-serif' }}
+                      style={{
+                        width: mobileLayout ? '100px' : '120px',
+                        marginLeft: '-20px',
+                        fontWeight: 'bold',
+                        fontFamily: 'Helvetica Neue, sans-serif'
+                      }}
                     >
                       Đăng ký
                     </Button>,

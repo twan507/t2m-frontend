@@ -42,7 +42,7 @@ const PageUsers: React.FC = () => {
 
   useEffect(() => {
     if (!session || session.user.role !== "T2M ADMIN") {
-      router.push("/");
+      router.push("/admin");
     }
   }, [session, router]);
 

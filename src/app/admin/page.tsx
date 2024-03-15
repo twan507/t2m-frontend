@@ -8,8 +8,10 @@ export default async function AdminPage() {
   if (session) {
     if (session.user.role === "T2M ADMIN") {
       redirect("/admin/dashboard")
-    } else {
-      redirect("/")
     }
   }
+
+  return (
+    <div> hello </div>
+  )
 }

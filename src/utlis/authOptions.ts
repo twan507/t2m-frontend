@@ -8,25 +8,14 @@ export const authOptions: AuthOptions = {
     providers: [
         CredentialsProvider({
             name: "account",
-            credentials: {
-                username: { label: "Username", type: "text", placeholder: "Nhập email" },
-                password: { label: "Password", type: "password" }
-            },
+            // credentials: {
+            //     username: { label: "Username", type: "text", placeholder: "Nhập email" },
+            //     password: { label: "Password", type: "password" }
+            // },
+            credentials: {},
             async authorize(credentials, req) {
-
-                const res = await sendRequest<IBackendRes<JWT>>({
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
-                    method: "POST",
-                    body: {
-                        username: credentials?.username,
-                        password: credentials?.password
-                    }
-                })
-                if (res && res.data) {
-                    return res.data as any
-                } else {
-                    throw new Error(res?.message as string)
-                }
+                //@ts-ignore
+                return JSON.parse(credentials?.loginData)
             }
         })
     ],

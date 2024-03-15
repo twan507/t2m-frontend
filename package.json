@@ -20,7 +20,8 @@
     "next-auth": "4.24.6",
     "query-string": "8.1.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-highlight-words": "0.20.0"
   },
   "devDependencies": {
     "@types/node": "20.9.0",

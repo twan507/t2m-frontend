@@ -126,7 +126,7 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
           Dòng tiền thị trường
         </a>
       ),
-      key: 'dong-tien-thi-truon',
+      key: 'dong-tien-thi-truong',
       icon: <LineChartOutlined style={{ fontSize: '18px', marginLeft: '-1px' }} />,
     },
     {

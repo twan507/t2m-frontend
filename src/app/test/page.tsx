@@ -8,10 +8,10 @@ export default function Home() {
 
   const [isSignInModalOpen, setSignInModalOpen] = useState(false)
 
-  const [checkAuth, setCheckAuth] = useState(true);
-
   const authInfo = useAppSelector((state) => state.auth)
   const authState = !!authInfo.access_token
+
+  
   const dispatch = useAppDispatch();
 
   const userData = {
@@ -33,9 +33,6 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    setCheckAuth(false)
-  }, []);
 
   const handleLogin = () => {
     dispatch(setAuthState(userData));
@@ -48,6 +45,12 @@ export default function Home() {
     console.log(authInfo)
     console.log(authState)
   };
+
+  const [checkAuth, setCheckAuth] = useState(true);
+
+  useEffect(() => {
+    setCheckAuth(false)
+  }, []);
 
   if (!checkAuth) {
     return (

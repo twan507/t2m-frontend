@@ -2,7 +2,6 @@
 import { sendRequest } from '@/utlis/api';
 import { StopOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 interface IProps {

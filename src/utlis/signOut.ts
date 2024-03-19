@@ -10,8 +10,8 @@ export async function signOut(access_token: string) {
         method: "GET"
     })
     if (!res?.error) {
-        // window.location.href = "/"
-        notification.success({
+        window.location.reload()
+        notification.info({
             message: "Đăng xuất thành công"
         })
 

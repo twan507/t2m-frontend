@@ -2,9 +2,9 @@
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button } from 'antd';
 import { FormInstance, RuleObject } from 'antd/es/form';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import ForgetPasswordModal from './forgetpassword.modal';
+import { useAppSelector } from '@/redux/store';
 
 interface IProps {
     isChangePasswordOpen: boolean
@@ -13,7 +13,9 @@ interface IProps {
 
 const ChangePasswordModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
+
     const [form] = Form.useForm()
 
     const { isChangePasswordOpen, setIsChangePasswordOpen } = props
@@ -48,7 +50,7 @@ const ChangePasswordModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/change-password`,
             method: "POST",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: data
         })
 

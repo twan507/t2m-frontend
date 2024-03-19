@@ -13,11 +13,11 @@ export async function signIn(form: any) {
         }
     })
     if (!res?.error) {
-        // window.location.href = "/"
+        window.location.reload()
         notification.success({
             message: "Đăng nhập thành công"
         })
-        
+
         return res.data
     } else {
         notification.error({

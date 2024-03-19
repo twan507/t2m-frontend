@@ -1,8 +1,8 @@
 'use client'
+import { useAppSelector } from '@/redux/store';
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Button } from 'antd';
 import { FormInstance, RuleObject } from 'antd/es/form';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 interface IProps {
@@ -12,18 +12,19 @@ interface IProps {
 
 const ForgetPasswordModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
     const [form] = Form.useForm()
 
     const { isForgetPasswordOpen, setIsForgetPasswordOpen } = props
 
     useEffect(() => {
-        if (session) {
+        if (authState) {
             form.setFieldsValue({
-                email: session.user.email,
+                email: authInfo.user.email,
             })
         }
-    }, [session])
+    }, [authState])
 
     //Hàm kiểm tra email
     const validateEmail = async (_: RuleObject, value: string) => {
@@ -61,7 +62,7 @@ const ForgetPasswordModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/forget-password`,
             method: "POST",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: data
         })
 
@@ -91,7 +92,7 @@ const ForgetPasswordModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/send-password-token`,
             method: "POST",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: { email: form.getFieldValue('email') }
         })
 

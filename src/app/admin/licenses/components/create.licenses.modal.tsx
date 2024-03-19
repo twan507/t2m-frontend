@@ -3,7 +3,6 @@ import { sendRequest } from '@/utlis/api';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { Modal, Input, notification, Form, Select, Button, Upload } from 'antd';
 import { RuleObject } from 'antd/es/form';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 const { Option } = Select;
 

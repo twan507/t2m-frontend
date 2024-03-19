@@ -1,10 +1,10 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Modal, notification, Avatar } from 'antd';
-import { useSession } from 'next-auth/react';
 import { sendRequest } from '@/utlis/api';
 import ChangePasswordModal from './changepassword.modal';
 import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/redux/store';
 
 
 interface IProps {
@@ -16,7 +16,8 @@ const UserInfoModal = (props: IProps) => {
 
     const [form] = Form.useForm()
     const router = useRouter();
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
 
     const { isUserInfoModal, setUserInfoModalOpen } = props
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
@@ -24,9 +25,9 @@ const UserInfoModal = (props: IProps) => {
 
     const getUser = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${session?.user._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${authInfo.user._id}`,
             method: "GET",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
         });
         setUserInfo(res.data)
     }
@@ -36,7 +37,7 @@ const UserInfoModal = (props: IProps) => {
     }, [isUserInfoModal])
 
     useEffect(() => {
-        if (session && userInfo) {
+        if (authState && userInfo) {
             form.setFieldsValue({
                 //@ts-ignore
                 name: userInfo.name,
@@ -91,7 +92,7 @@ const UserInfoModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/user-change-info`,
             method: "PUT",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: data
         })
 
@@ -180,7 +181,7 @@ const UserInfoModal = (props: IProps) => {
                     }}>
                         <Avatar
                             style={{
-                                backgroundColor: session ? '#7265e6' : '#404040',
+                                backgroundColor: authState ? '#7265e6' : '#404040',
                                 marginRight: '20px',
                                 minWidth: '60px',
                                 height: '60px',
@@ -190,34 +191,34 @@ const UserInfoModal = (props: IProps) => {
                                 alignItems: 'center'
                             }}
                         >
-                            {session ? getAvatarName(session.user.name) : ''}
+                            {authState ? getAvatarName(authInfo.user.name) : ''}
                         </Avatar>
-                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginTop: session ? '-4px' : '3px', marginLeft: session ? '0px' : '12px' }}>
-                            <div style={{ fontSize: 20, color: 'white' }}>{session ? getUserName(session.user.name) : ''}</div>
-                            {session && (
+                        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginTop: authState ? '-4px' : '3px', marginLeft: authState ? '0px' : '12px' }}>
+                            <div style={{ fontSize: 20, color: 'white' }}>{authState ? getUserName(authInfo.user.name) : ''}</div>
+                            {authState && (
                                 <div style={{ display: 'flex', marginTop: -3 }} >
                                     <div style={{
                                         fontSize: 12, marginTop: 5, padding: '0px 5px 0px 5px',
                                         background:
-                                            session.user.role === "T2M ADMIN" ? '#98217c' : (
-                                                !session.user.licenseInfo.accessLevel ? '#404040' : (
-                                                    session.user.licenseInfo.accessLevel === 1 ? '#1E7607' : (
-                                                        session.user.licenseInfo.accessLevel === 2 ? '#1777ff' : (
-                                                            session.user.licenseInfo.accessLevel === 3 ? '#642198' : '#98217c'
+                                            authInfo.user.role === "T2M ADMIN" ? '#98217c' : (
+                                                !authInfo.user.licenseInfo.accessLevel ? '#404040' : (
+                                                    authInfo.user.licenseInfo.accessLevel === 1 ? '#1E7607' : (
+                                                        authInfo.user.licenseInfo.accessLevel === 2 ? '#1777ff' : (
+                                                            authInfo.user.licenseInfo.accessLevel === 3 ? '#642198' : '#98217c'
                                                         )))),
                                         borderRadius: 5, width: 'fit-content'
                                     }}
                                     >
-                                        {session.user.role === "T2M ADMIN" ? "ADMIN" : session.user.licenseInfo.product ?? 'FREE'}
+                                        {authInfo.user.role === "T2M ADMIN" ? "ADMIN" : authInfo.user.licenseInfo.product ?? 'FREE'}
                                     </div>
-                                    {session.user.licenseInfo.daysLeft && (
+                                    {authInfo.user.licenseInfo.daysLeft && (
                                         //@ts-ignore
-                                        <div style={{ fontSize: 12, marginTop: 2, marginLeft: '5px', padding: '0px 5px 0px 5px', background: '#A20D0D', borderRadius: 5, width: 'fit-content' }}>{`${session.user.licenseInfo.daysLeft} days`}</div>
+                                        <div style={{ fontSize: 12, marginTop: 2, marginLeft: '5px', padding: '0px 5px 0px 5px', background: '#A20D0D', borderRadius: 5, width: 'fit-content' }}>{`${authInfo.user.licenseInfo.daysLeft} days`}</div>
                                     )}
                                 </div>
                             )}
                         </div>
-                        {session?.user.role === "T2M ADMIN" && (
+                        {authInfo.user.role === "T2M ADMIN" && (
                             <Button type='primary' style={{ marginLeft: '70px' }} onClick={() => router.push('/admin')}>
                                 ADMIN PORTAL
                             </Button>

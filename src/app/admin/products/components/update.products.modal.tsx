@@ -2,7 +2,6 @@
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button, InputNumber } from 'antd';
 import { RuleObject } from 'antd/es/form';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 const { Option } = Select;
 

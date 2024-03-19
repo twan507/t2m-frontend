@@ -1,11 +1,8 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Divider, Modal, Typography, Select, notification } from 'antd';
-import Link from 'next/link';
-import { Option } from 'antd/es/mentions';
+import { Button, Form, Input, Modal, Typography, Select, notification } from 'antd';
 import { sendRequest } from '@/utlis/api';
 import { RuleObject } from 'antd/es/form';
-import { useSession } from 'next-auth/react';
 
 
 interface IProps {
@@ -25,7 +22,6 @@ type FieldType = {
 
 const AuthSignUpModal = (props: IProps) => {
 
-    const { data: session } = useSession()
     const [form] = Form.useForm()
 
     const { isSignUpModalOpen, setSignUpModalOpen } = props

@@ -62,6 +62,9 @@ function getUserName(name: string) {
 }
 
 const Homelayout = ({ children }: React.PropsWithChildren) => {
+  //@ts-ignore
+  const path = children.props.childProp.segment === "__PAGE__" ? "tong-quan-thi-truong" : children.props.childProp.segment
+
   const { Sider } = Layout;
 
   const router = useRouter()
@@ -265,7 +268,7 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
               style={{ background: '#000000' }}
               theme="dark"
               mode="inline"
-              defaultSelectedKeys={['tong-quan-thi-truong']}
+              defaultSelectedKeys={[path]}
               items={sider_menu}
             />
             <div>

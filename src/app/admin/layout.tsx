@@ -61,6 +61,9 @@ function getUserName(name: string) {
 const AdminLayout = ({ children }: React.PropsWithChildren) => {
   const { Sider } = Layout;
 
+  //@ts-ignore
+  const path = children.props.childProp.segment === "__PAGE__" ? "dashboard" : children.props.childProp.segment
+
   const [collapsed, setCollapsed] = useState(true);
 
   const router = useRouter()
@@ -221,7 +224,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
               style={{ background: '#0a0a0a' }}
               theme="dark"
               mode="inline"
-              defaultSelectedKeys={['dashboard']}
+              defaultSelectedKeys={[path]}
               items={sider_menu}
             />
             <div>

@@ -137,7 +137,7 @@ const AuthSignInModal = (props: IProps) => {
                     </Form.Item>
 
                     <Form.Item style={{ marginBottom: '5px' }}>
-                        <Button type="primary" htmlType="submit" block
+                        <Button type="primary" htmlType="submit" block onClick={() => form.submit()}
                             style={{
                                 height: '40px', // hoặc bất kỳ độ cao nào bạn muốn
                                 fontWeight: 'bold', // làm chữ đậm

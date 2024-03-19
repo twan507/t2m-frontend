@@ -43,7 +43,7 @@ export default function Home() {
   };
 
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.access_token
+  const authState = !!authInfo.user
 
   const [checkAuth, setCheckAuth] = useState(true);
 

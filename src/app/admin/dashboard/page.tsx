@@ -1,13 +1,12 @@
 'use client'
 import { useAppSelector } from "@/redux/store";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
 
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.access_token
+  const authState = !!authInfo.user
 
   const router = useRouter()
 

@@ -15,7 +15,7 @@ interface IProps {
 const ResetPasswordModal = (props: IProps) => {
 
     const authInfo = useAppSelector((state) => state.auth)
-    const authState = !!authInfo.access_token
+    const authState = !!authInfo.user
     const [form] = Form.useForm()
 
     const { getData, isResetPasswordOpen, setIsResetPasswordOpen, updateUserRecord } = props

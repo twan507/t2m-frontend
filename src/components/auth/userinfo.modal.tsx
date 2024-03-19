@@ -17,7 +17,7 @@ const UserInfoModal = (props: IProps) => {
     const [form] = Form.useForm()
     const router = useRouter();
     const authInfo = useAppSelector((state) => state.auth)
-    const authState = !!authInfo.access_token
+    const authState = !!authInfo.user
 
     const { isUserInfoModal, setUserInfoModalOpen } = props
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
@@ -54,35 +54,39 @@ const UserInfoModal = (props: IProps) => {
         setUserInfoModalOpen(false)
     }
 
+    function getAvatarName(name: string) {
+        const words = name?.split(' ').filter(Boolean);
+        if (words) {
+            if (words.length === 0) return '';
+
+            if (words.length === 1) {
+                return words[0][0].toUpperCase();
+            }
+
+            const firstInitial = words[0][0];
+            const lastInitial = words[words.length - 1][0];
+            return (firstInitial + lastInitial).toUpperCase();
+        }
+    }
+
     function capitalizeFirstLetter(word: string): string {
         return word.charAt(0).toUpperCase() + word.slice(1);
     }
 
-    function getUserName(name: string): string {
-        const words = name.split(' ').filter(Boolean).map(capitalizeFirstLetter);
+    function getUserName(name: string) {
+        const words = name?.split(' ').filter(Boolean).map(capitalizeFirstLetter);
 
-        if (words.length === 0) return '';
-        if (words.length === 1) return words[0];
-        if (words.length > 4) {
-            // Bỏ từ thứ hai và lấy 3 từ còn lại
-            return `${words[0]} ${words[2]} ${words[3]}`;
+        if (words) {
+            if (words.length === 0) return '';
+            if (words.length === 1) return words[0];
+            if (words.length > 4) {
+                // Bỏ từ thứ hai và lấy 3 từ còn lại
+                return `${words[0]} ${words[2]} ${words[3]}`;
+            }
+            // Trường hợp còn lại, trả về tên đầy đủ
+            return words.join(' ');
         }
 
-        // Trường hợp còn lại, trả về tên đầy đủ
-        return words.join(' ');
-    }
-
-    function getAvatarName(name: string): string {
-        const words = name.split(' ').filter(Boolean);
-        if (words.length === 0) return '';
-
-        if (words.length === 1) {
-            return words[0][0].toUpperCase();
-        }
-
-        const firstInitial = words[0][0];
-        const lastInitial = words[words.length - 1][0];
-        return (firstInitial + lastInitial).toUpperCase();
     }
 
     const onFinish = async (values: any) => {
@@ -201,19 +205,19 @@ const UserInfoModal = (props: IProps) => {
                                         fontSize: 12, marginTop: 5, padding: '0px 5px 0px 5px',
                                         background:
                                             authInfo.user.role === "T2M ADMIN" ? '#98217c' : (
-                                                !authInfo.user.licenseInfo.accessLevel ? '#404040' : (
-                                                    authInfo.user.licenseInfo.accessLevel === 1 ? '#1E7607' : (
-                                                        authInfo.user.licenseInfo.accessLevel === 2 ? '#1777ff' : (
-                                                            authInfo.user.licenseInfo.accessLevel === 3 ? '#642198' : '#98217c'
+                                                !authInfo.user.licenseInfo?.accessLevel ? '#404040' : (
+                                                    authInfo.user.licenseInfo?.accessLevel === 1 ? '#1E7607' : (
+                                                        authInfo.user.licenseInfo?.accessLevel === 2 ? '#1777ff' : (
+                                                            authInfo.user.licenseInfo?.accessLevel === 3 ? '#642198' : '#98217c'
                                                         )))),
                                         borderRadius: 5, width: 'fit-content'
                                     }}
                                     >
-                                        {authInfo.user.role === "T2M ADMIN" ? "ADMIN" : authInfo.user.licenseInfo.product ?? 'FREE'}
+                                        {authInfo.user.role === "T2M ADMIN" ? "ADMIN" : authInfo.user.licenseInfo?.product ?? 'FREE'}
                                     </div>
-                                    {authInfo.user.licenseInfo.daysLeft && (
+                                    {authInfo.user.licenseInfo?.daysLeft && (
                                         //@ts-ignore
-                                        <div style={{ fontSize: 12, marginTop: 2, marginLeft: '5px', padding: '0px 5px 0px 5px', background: '#A20D0D', borderRadius: 5, width: 'fit-content' }}>{`${authInfo.user.licenseInfo.daysLeft} days`}</div>
+                                        <div style={{ fontSize: 12, marginTop: 2, marginLeft: '5px', padding: '0px 5px 0px 5px', background: '#A20D0D', borderRadius: 5, width: 'fit-content' }}>{`${authInfo.user.licenseInfo?.daysLeft} days`}</div>
                                     )}
                                 </div>
                             )}

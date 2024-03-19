@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 const Page2 = () => {
 
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.access_token
+  const authState = !!authInfo.user
 
   const router = useRouter()
 

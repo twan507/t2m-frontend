@@ -34,9 +34,11 @@ const AuthSignInModal = (props: IProps) => {
     }
 
     const onFinish = async () => {
-        const loginData: any = await signIn(form)
-        dispatch(setAuthState(loginData))
-        handleClose()
+        const loginData = await signIn(form)
+        if (loginData) {
+            dispatch(setAuthState(loginData))
+            handleClose()
+        }
     };
 
     const onFinishFailed = (errorInfo: any) => {

@@ -15,7 +15,7 @@ interface IProps {
 const CreatProductModal = (props: IProps) => {
 
     const authInfo = useAppSelector((state) => state.auth)
-    const authState = !!authInfo.access_token
+    const authState = !!authInfo.user
 
     const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
 

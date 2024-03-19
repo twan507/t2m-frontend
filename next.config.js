@@ -1,7 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+// const nextConfig = {}
 
-module.exports = nextConfig
+// module.exports = nextConfig
+
+const nextConfig  = {
+    output: "export",
+    distDir: "dist",
+}
+
 
 // /** @type {import('next').NextConfig} */
 

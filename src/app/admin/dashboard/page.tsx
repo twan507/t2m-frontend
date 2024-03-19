@@ -1,7 +1,8 @@
 'use client'
+import { useAppSelector } from "@/redux/store";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
   const { data: session } = useSession()
@@ -13,16 +14,27 @@ export default function AdminDashboard() {
     }
   }, [session, router]);
 
-  return (
-    <>
-      <div> T2M AdminDashboard </div>
-      <div> T2M AdminDashboard </div>
-      <div> T2M AdminDashboard </div>
-      <div> T2M AdminDashboard </div>
-      <div> T2M AdminDashboard </div>
-      <div> T2M AdminDashboard </div>
-    </>
+  const [checkAuth, setCheckAuth] = useState(true);
 
-  )
+  useEffect(() => {
+    setCheckAuth(false)
+  }, []);
+
+  if (!checkAuth) {
+    return (
+      <>
+        <div> T2M AdminDashboard </div>
+        <div> T2M AdminDashboard </div>
+        <div> T2M AdminDashboard </div>
+        <div> T2M AdminDashboard </div>
+        <div> T2M AdminDashboard </div>
+        <div> T2M AdminDashboard </div>
+        <div className="flex gap border border-1 border-black p-20">
+          {/* You are now {authState ? "Logged In" : "Logged Out"} */}
+        </div>
+      </>
+
+    )
+  }
 }
 

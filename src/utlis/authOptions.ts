@@ -26,7 +26,7 @@ export const authOptions: AuthOptions = {
         jwt({ token, user, account, profile, trigger }) {
 
             if (trigger === 'signIn' && account?.provider === "credentials") {
-
+                console.log(user)
                 //@ts-ignore
                 token.user = user.user
                 //@ts-ignore

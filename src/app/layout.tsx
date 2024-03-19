@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import './globals.css'
 import NextAuthWrapper from '@/lib/next.auth.wrapper';
+import ReduxProvider from '@/redux/provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,9 +16,11 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
       <body>
         <AntdRegistry>
           <NextAuthWrapper>
-            <div>
-              {children}
-            </div>
+            <ReduxProvider>
+              <div>
+                {children}
+              </div>
+            </ReduxProvider>
           </NextAuthWrapper>
         </AntdRegistry>
       </body>

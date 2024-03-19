@@ -1,11 +1,11 @@
 'use client'
 import React, { useState } from 'react';
 import { Button, Form, Input, Divider, Modal, notification } from 'antd';
-import { signIn } from 'next-auth/react';
 import AuthSignUpModal from './signup.modal';
 import ForgetPasswordModal from './forgetpassword.modal';
-import { sendRequest } from '@/utlis/api';
-import { JWT } from 'next-auth/jwt';
+import { signIn } from '@/utlis/signIn';
+import { useAppDispatch } from '@/redux/store';
+import { setAuthState } from '@/redux/authSlice';
 
 
 interface IProps {
@@ -20,6 +20,8 @@ type FieldType = {
 
 const AuthSignInModal = (props: IProps) => {
 
+    const dispatch = useAppDispatch();
+
     const [form] = Form.useForm()
 
     const { isSignInModalOpen, setSignInModalOpen } = props
@@ -32,49 +34,9 @@ const AuthSignInModal = (props: IProps) => {
     }
 
     const onFinish = async () => {
-
-        const res = await sendRequest<IBackendRes<JWT>>({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
-            method: "POST",
-            body: {
-                username: form.getFieldValue('username'),
-                password: form.getFieldValue('password')
-            }
-        })
-        console.log(res)
-
-        if (res && res.data) {
-            const res_log = await signIn("credentials", {
-                loginData: JSON.stringify(res.data),
-                redirect: false
-            })
-
-            if (!res_log?.error) {
-                window.location.href = "/"
-            } else {
-                notification.error({
-                    message: res_log.error
-                })
-            }
-        } else {
-            notification.error({
-                message: res.message
-            })
-        }
-
-        // const res = await signIn("credentials", {
-        //     username: form.getFieldValue('username'),
-        //     password: form.getFieldValue('password'),
-        //     redirect: false
-        // })
-
-        // if (!res?.error) {
-        //     window.location.href = "/"
-        // } else {
-        //     notification.error({
-        //         message: res.error
-        //     })
-        // }
+        const loginData: any = await signIn(form)
+        dispatch(setAuthState(loginData))
+        handleClose()
     };
 
     const onFinishFailed = (errorInfo: any) => {

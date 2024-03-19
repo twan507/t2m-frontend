@@ -15,13 +15,13 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
     <html lang="en">
       <body>
         <AntdRegistry>
-          <NextAuthWrapper>
+          {/* <NextAuthWrapper> */}
             <ReduxProvider>
               <div>
                 {children}
               </div>
             </ReduxProvider>
-          </NextAuthWrapper>
+          {/* </NextAuthWrapper> */}
         </AntdRegistry>
       </body>
     </html>

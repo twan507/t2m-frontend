@@ -15,6 +15,7 @@ import {
 import CreatProductModal from './components/create.products.modal';
 import UpdateProductModal from './components/update.products.modal';
 import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/redux/store';
 
 
 interface DataType {
@@ -30,15 +31,16 @@ interface DataType {
 type DataIndex = keyof DataType;
 
 const PageProducts: React.FC = () => {
+  const authInfo = useAppSelector((state) => state.auth)
+  const authState = !!authInfo.access_token
 
-  const { data: session } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (!session || session.user.role !== "T2M ADMIN") {
+    if (!authState || authInfo.user.role !== "T2M ADMIN") {
       router.push("/admin");
     }
-  }, [session, router]);
+  }, [authState, router]);
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -62,7 +64,7 @@ const PageProducts: React.FC = () => {
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products`,
       method: "GET",
       queryParams: { current: meta.current, pageSize: meta.pageSize },
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
@@ -73,7 +75,7 @@ const PageProducts: React.FC = () => {
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products`,
       method: "GET",
       queryParams: { current: current, pageSize: pageSize },
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
@@ -83,7 +85,7 @@ const PageProducts: React.FC = () => {
     const res = await sendRequest<IBackendRes<any>>({
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${id}`,
       method: "DELETE",
-      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
     })
 
     if (res.data) {
@@ -103,7 +105,7 @@ const PageProducts: React.FC = () => {
     const res = await sendRequest<IBackendRes<any>>({
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${record._id}`,
       method: "PATCH",
-      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
       body: { status: status }
     })
 
@@ -122,7 +124,7 @@ const PageProducts: React.FC = () => {
 
   useEffect(() => {
     getData()
-  }, [session])
+  }, [authState])
 
   const handleSearch = (
     selectedKeys: string[],
@@ -325,41 +327,47 @@ const PageProducts: React.FC = () => {
       }
     },
   ];
+  const [checkAuth, setCheckAuth] = useState(true);
 
-  return (
-    <>
-      <CreatProductModal
-        getData={getData}
-        isCreateModalOpen={isCreateModalOpen}
-        setIsCreateModalOpen={setIsCreateModalOpen}
-      />
+  useEffect(() => {
+    setCheckAuth(false)
+  }, []);
 
-      <UpdateProductModal
-        getData={getData}
-        isUpdateModalOpen={isUpdateModalOpen}
-        setIsUpdateModalOpen={setIsUpdateModalOpen}
-        updateProductRecord={updateProductRecord}
-      />
+  if (!checkAuth) {
+    return (
+      <>
+        <CreatProductModal
+          getData={getData}
+          isCreateModalOpen={isCreateModalOpen}
+          setIsCreateModalOpen={setIsCreateModalOpen}
+        />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1> Danh sách sản phẩm</h1>
-        <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
-      </div>
-      <Table
-        columns={columns}
-        dataSource={listUsers}
-        rowKey={"_id"}
-        pagination={{
-          current: meta.current,
-          pageSize: meta.pageSize,
-          total: meta.total,
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-          onChange: (current: number, pageSize: number) => { handleOnChange(current, pageSize) },
-          showSizeChanger: true
-        }}
-      />
-    </>
-  )
-};
+        <UpdateProductModal
+          getData={getData}
+          isUpdateModalOpen={isUpdateModalOpen}
+          setIsUpdateModalOpen={setIsUpdateModalOpen}
+          updateProductRecord={updateProductRecord}
+        />
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1> Danh sách sản phẩm</h1>
+          <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
+        </div>
+        <Table
+          columns={columns}
+          dataSource={listUsers}
+          rowKey={"_id"}
+          pagination={{
+            current: meta.current,
+            pageSize: meta.pageSize,
+            total: meta.total,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+            onChange: (current: number, pageSize: number) => { handleOnChange(current, pageSize) },
+            showSizeChanger: true
+          }}
+        />
+      </>
+    )
+  };
+}
 export default PageProducts;

@@ -19,7 +19,7 @@ export const authOptions: AuthOptions = {
             }
         })
     ],
-    session: {
+    authState: {
         maxAge: 60 * 60 * 24,
     },
     callbacks: {
@@ -36,10 +36,10 @@ export const authOptions: AuthOptions = {
             return token
         },
         //@ts-ignore
-        async session({ session, token, user }) {
+        async authState({ authState, token, user }) {
 
             const sessionLimit = await sendRequest<IBackendRes<JWT>>({
-                url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/session-limit`,
+                url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/authState-limit`,
                 method: "POST",
                 body: {
                     //@ts-ignore
@@ -50,8 +50,8 @@ export const authOptions: AuthOptions = {
             })
 
             if (token) {
-                session.user = token.user
-                session.access_token = token.access_token
+                authInfo.user = token.user
+                authInfo.access_token = token.access_token
             }
 
 
@@ -59,7 +59,7 @@ export const authOptions: AuthOptions = {
                 return null
             }
 
-            return session
+            return authState
         }
     },
 }

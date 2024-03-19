@@ -25,7 +25,7 @@ const UserInfoModal = (props: IProps) => {
 
     const getUser = async () => {
         const res = await sendRequest<IBackendRes<any>>({
-            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${authInfo.user._id}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${authInfo?.user?._id}`,
             method: "GET",
             headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
         });
@@ -218,7 +218,7 @@ const UserInfoModal = (props: IProps) => {
                                 </div>
                             )}
                         </div>
-                        {authInfo.user.role === "T2M ADMIN" && (
+                        {authInfo?.user?.role === "T2M ADMIN" && (
                             <Button type='primary' style={{ marginLeft: '70px' }} onClick={() => router.push('/admin')}>
                                 ADMIN PORTAL
                             </Button>

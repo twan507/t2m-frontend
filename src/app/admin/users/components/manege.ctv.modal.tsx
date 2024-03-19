@@ -1,4 +1,5 @@
 'use client'
+import { useAppSelector } from '@/redux/store';
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button } from 'antd';
 import { RuleObject } from 'antd/es/form';
@@ -13,7 +14,9 @@ interface IProps {
 
 const ManageCTVModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
+
     const [form] = Form.useForm()
 
     const { getData, isCTVModalOpen, setIsCTVModalOpen, updateUserRecord } = props
@@ -65,7 +68,7 @@ const ManageCTVModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/manage-ctv`,
             method: "POST",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: { email: data.email, ctvCode: data.ctvCode }
         })
 
@@ -87,52 +90,59 @@ const ManageCTVModal = (props: IProps) => {
     if (updateUserRecord) {
         ctvCodePlaceHolder = (updateUserRecord.role === 'T2M CTV' ? `Nhập mã ${updateUserRecord.affiliateCode} để xác nhận huỷ quyền CTV` : 'Tạo mã CTV mới')
     }
+    const [checkAuth, setCheckAuth] = useState(true);
 
-    return (
-        <Modal
-            title="Thay đổi quyền CTV người dùng"
-            open={isCTVModalOpen}
-            onOk={() => form.submit()}
-            onCancel={handleClose}
-            maskClosable={false}>
+    useEffect(() => {
+        setCheckAuth(false)
+    }, []);
 
-            <Form
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                layout="vertical"
-                form={form}
-            >
+    if (!checkAuth) {
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Email"
-                    name="email"
-                    rules={[
-                        { required: true, message: 'Email không được để trống!' },
-                        { validator: validateEmail }
-                    ]}
+        return (
+            <Modal
+                title="Thay đổi quyền CTV người dùng"
+                open={isCTVModalOpen}
+                onOk={() => form.submit()}
+                onCancel={handleClose}
+                maskClosable={false}>
+
+                <Form
+                    name="basic"
+                    initialValues={{ remember: true }}
+                    onFinish={onFinish}
+                    layout="vertical"
+                    form={form}
                 >
-                    <Input placeholder="Nhập Email người dùng mới" />
-                </Form.Item>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    name="ctvCode"
-                    label="Mã CTV"
-                    rules={[{ validator: validateSponsorsCode }]}
-                >
-                    <Input placeholder={ctvCodePlaceHolder} style={{ width: "100%" }} />
-                </Form.Item>
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Email"
+                        name="email"
+                        rules={[
+                            { required: true, message: 'Email không được để trống!' },
+                            { validator: validateEmail }
+                        ]}
+                    >
+                        <Input placeholder="Nhập Email người dùng mới" />
+                    </Form.Item>
 
-                <Form.Item style={{ display: 'none' }}>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
-                </Form.Item>
-            </Form>
-        </Modal>
-    )
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        name="ctvCode"
+                        label="Mã CTV"
+                        rules={[{ validator: validateSponsorsCode }]}
+                    >
+                        <Input placeholder={ctvCodePlaceHolder} style={{ width: "100%" }} />
+                    </Form.Item>
+
+                    <Form.Item style={{ display: 'none' }}>
+                        <Button type="primary" htmlType="submit">
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    }
 }
-
 export default ManageCTVModal

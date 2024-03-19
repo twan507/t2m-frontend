@@ -8,10 +8,6 @@ export default function Home() {
 
   const [isSignInModalOpen, setSignInModalOpen] = useState(false)
 
-  const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.access_token
-
-  
   const dispatch = useAppDispatch();
 
   const userData = {
@@ -45,6 +41,9 @@ export default function Home() {
     console.log(authInfo)
     console.log(authState)
   };
+
+  const authInfo = useAppSelector((state) => state.auth)
+  const authState = !!authInfo.access_token
 
   const [checkAuth, setCheckAuth] = useState(true);
 

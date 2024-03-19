@@ -1,4 +1,5 @@
 'use client'
+import { useAppSelector } from '@/redux/store';
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button } from 'antd';
 import { RuleObject } from 'antd/es/form';
@@ -14,7 +15,8 @@ interface IProps {
 
 const UpdateUserModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
 
     let tempInitial: string[] = []
     const [validSponsorsCode, setValidSponsorsCode] = useState(tempInitial)
@@ -76,7 +78,7 @@ const UpdateUserModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${updateUserRecord._id}`,
             method: "PATCH",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: data
         })
 
@@ -101,72 +103,79 @@ const UpdateUserModal = (props: IProps) => {
         setIsUpdateModalOpen(false)
     }
 
-    return (
-        <Modal
-            title="Chỉnh sửa thông tin người dùng"
-            open={isUpdateModalOpen}
-            onOk={() => form.submit()}
-            onCancel={handleClose}
-            maskClosable={false}>
+    const [checkAuth, setCheckAuth] = useState(true);
 
-            <Form
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                layout="vertical"
-                form={form}
-            >
+    useEffect(() => {
+        setCheckAuth(false)
+    }, []);
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Email"
-                    name="email"
-                    rules={[
-                        { required: true, message: 'Email không được để trống!' },
-                        { validator: validateEmail }
-                    ]}
+    if (!checkAuth) {
+        return (
+            <Modal
+                title="Chỉnh sửa thông tin người dùng"
+                open={isUpdateModalOpen}
+                onOk={() => form.submit()}
+                onCancel={handleClose}
+                maskClosable={false}>
+
+                <Form
+                    name="basic"
+                    initialValues={{ remember: true }}
+                    onFinish={onFinish}
+                    layout="vertical"
+                    form={form}
                 >
-                    <Input placeholder="Nhập Email người dùng mới" />
-                </Form.Item>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Tên người dùng"
-                    name="name"
-                    rules={[{ required: true, message: 'Tên người dùng không được để trống!' }]}
-                >
-                    <Input placeholder="Nhập tên đầy đủ của người dùng" />
-                </Form.Item>
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Email"
+                        name="email"
+                        rules={[
+                            { required: true, message: 'Email không được để trống!' },
+                            { validator: validateEmail }
+                        ]}
+                    >
+                        <Input placeholder="Nhập Email người dùng mới" />
+                    </Form.Item>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Số điện thoại"
-                    name="phoneNumber"
-                    rules={[
-                        { required: true, message: 'Số điện thoại không được để trống!' },
-                        { validator: validatePhoneNumber }
-                    ]}
-                >
-                    <Input placeholder="Nhập số điện thoại người dùng" style={{ width: "100%" }} />
-                </Form.Item>
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Tên người dùng"
+                        name="name"
+                        rules={[{ required: true, message: 'Tên người dùng không được để trống!' }]}
+                    >
+                        <Input placeholder="Nhập tên đầy đủ của người dùng" />
+                    </Form.Item>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    name="sponsorCode"
-                    label="Mã giới thiệu"
-                    rules={[{ validator: validateSponsorsCode }]}
-                >
-                    <Input placeholder="Nhập mã giới thiệu (Nếu có)" style={{ width: "100%" }} />
-                </Form.Item>
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Số điện thoại"
+                        name="phoneNumber"
+                        rules={[
+                            { required: true, message: 'Số điện thoại không được để trống!' },
+                            { validator: validatePhoneNumber }
+                        ]}
+                    >
+                        <Input placeholder="Nhập số điện thoại người dùng" style={{ width: "100%" }} />
+                    </Form.Item>
 
-                <Form.Item style={{ display: 'none' }}>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
-                </Form.Item>
-            </Form>
-        </Modal>
-    )
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        name="sponsorCode"
+                        label="Mã giới thiệu"
+                        rules={[{ validator: validateSponsorsCode }]}
+                    >
+                        <Input placeholder="Nhập mã giới thiệu (Nếu có)" style={{ width: "100%" }} />
+                    </Form.Item>
+
+                    <Form.Item style={{ display: 'none' }}>
+                        <Button type="primary" htmlType="submit">
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    }
 }
-
 export default UpdateUserModal

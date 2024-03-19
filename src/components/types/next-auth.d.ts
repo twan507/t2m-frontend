@@ -16,7 +16,7 @@ interface IUser {
 }
 
 declare module 'next-auth' {
-    interface Session {
+    interface authState {
         access_token: string;
         user: IUser
         limit: boolean

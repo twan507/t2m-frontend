@@ -16,6 +16,7 @@ import CreatLicenseModal from './components/create.licenses.modal';
 import UpdateLicenseModal from './components/update.licenses.modal';
 import ImageLicenseModal from './components/show.images.modal';
 import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/redux/store';
 
 
 interface DataType {
@@ -37,15 +38,16 @@ type DataIndex = keyof DataType;
 
 
 const PageLicenses: React.FC = () => {
+  const authInfo = useAppSelector((state) => state.auth)
+  const authState = !!authInfo.access_token
 
-  const { data: session } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (!session || session.user.role !== "T2M ADMIN") {
+    if (!authState || authInfo.user.role !== "T2M ADMIN") {
       router.push("/admin");
     }
-  }, [session, router]);
+  }, [authState, router]);
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -70,7 +72,7 @@ const PageLicenses: React.FC = () => {
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/licenses`,
       method: "GET",
       queryParams: { current: meta.current, pageSize: meta.pageSize },
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
@@ -81,7 +83,7 @@ const PageLicenses: React.FC = () => {
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/licenses`,
       method: "GET",
       queryParams: { current: current, pageSize: pageSize },
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
@@ -91,7 +93,7 @@ const PageLicenses: React.FC = () => {
     const res = await sendRequest<IBackendRes<any>>({
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/licenses/${id}`,
       method: "DELETE",
-      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
     })
 
     if (res.data) {
@@ -112,7 +114,7 @@ const PageLicenses: React.FC = () => {
     const res_user = await sendRequest<IBackendRes<any>>({
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/find-by-email`,
       method: "POST",
-      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
       body: { email: record.userEmail }
     })
 
@@ -126,7 +128,7 @@ const PageLicenses: React.FC = () => {
     const res = await sendRequest<IBackendRes<any>>({
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/licenses/${record._id}`,
       method: "PATCH",
-      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
       body: { status: status }
     })
 
@@ -146,7 +148,7 @@ const PageLicenses: React.FC = () => {
 
   useEffect(() => {
     getData()
-  }, [session])
+  }, [authState])
 
   const handleSearch = (
     selectedKeys: string[],
@@ -380,47 +382,53 @@ const PageLicenses: React.FC = () => {
       }
     },
   ];
+  const [checkAuth, setCheckAuth] = useState(true);
 
-  return (
-    <>
-      <CreatLicenseModal
-        getData={getData}
-        isCreateModalOpen={isCreateModalOpen}
-        setIsCreateModalOpen={setIsCreateModalOpen}
-      />
+  useEffect(() => {
+    setCheckAuth(false)
+  }, []);
 
-      <UpdateLicenseModal
-        getData={getData}
-        isUpdateModalOpen={isUpdateModalOpen}
-        setIsUpdateModalOpen={setIsUpdateModalOpen}
-        updateLicenseRecord={updateLicenseRecord}
-      />
+  if (!checkAuth) {
+    return (
+      <>
+        <CreatLicenseModal
+          getData={getData}
+          isCreateModalOpen={isCreateModalOpen}
+          setIsCreateModalOpen={setIsCreateModalOpen}
+        />
 
-      <ImageLicenseModal
-        isImageModalOpen={isImageModalOpen}
-        setIsImageModalOpen={setIsImageModalOpen}
-        updateLicenseRecord={updateLicenseRecord}
-      />
+        <UpdateLicenseModal
+          getData={getData}
+          isUpdateModalOpen={isUpdateModalOpen}
+          setIsUpdateModalOpen={setIsUpdateModalOpen}
+          updateLicenseRecord={updateLicenseRecord}
+        />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1> Danh sách Licenses</h1>
-        <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
-      </div>
-      <Table
-        columns={columns}
-        dataSource={listUsers}
-        rowKey={"_id"}
-        pagination={{
-          current: meta.current,
-          pageSize: meta.pageSize,
-          total: meta.total,
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-          onChange: (current: number, pageSize: number) => { handleOnChange(current, pageSize) },
-          showSizeChanger: true
-        }}
-      />
-    </>
-  )
-};
+        <ImageLicenseModal
+          isImageModalOpen={isImageModalOpen}
+          setIsImageModalOpen={setIsImageModalOpen}
+          updateLicenseRecord={updateLicenseRecord}
+        />
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1> Danh sách Licenses</h1>
+          <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
+        </div>
+        <Table
+          columns={columns}
+          dataSource={listUsers}
+          rowKey={"_id"}
+          pagination={{
+            current: meta.current,
+            pageSize: meta.pageSize,
+            total: meta.total,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+            onChange: (current: number, pageSize: number) => { handleOnChange(current, pageSize) },
+            showSizeChanger: true
+          }}
+        />
+      </>
+    )
+  };
+}
 export default PageLicenses;

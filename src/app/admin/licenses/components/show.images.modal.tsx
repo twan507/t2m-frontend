@@ -1,4 +1,5 @@
 'use client'
+import { useAppSelector } from '@/redux/store';
 import { sendRequest } from '@/utlis/api';
 import { StopOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
@@ -12,7 +13,8 @@ interface IProps {
 
 const ImageLicenseModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
 
     const { isImageModalOpen, setIsImageModalOpen, updateLicenseRecord } = props
     const [imageUrl, setImageUrl] = useState('')
@@ -34,7 +36,7 @@ const ImageLicenseModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/files`,
             method: "GET",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             queryParams: {
                 fileName: `${updateLicenseRecord.userEmail}-${convertToDDMMYYYY(updateLicenseRecord.startDate)}`,
                 module: 'licenses'
@@ -50,30 +52,38 @@ const ImageLicenseModal = (props: IProps) => {
             getImage()
         }
     }, [updateLicenseRecord])
-    console.log(imageUrl)
-    return (
-        <>
-            <Modal
-                open={isImageModalOpen}
-                onCancel={handleClose}
-                closeIcon={null}
-                footer={null}
-            >
-                {imageUrl ? (
-                    <img src={imageUrl} alt="Loaded from blob" style={{ maxWidth: '100%' }} />
-                ) : (
-                    <Button
-                        danger
-                        icon={<StopOutlined />}
-                        style={{ width: '100%' }}
-                    >
-                        Không tìm thấy hình ảnh
-                    </Button>
-                )}
-            </Modal >
-        </>
 
-    )
+    const [checkAuth, setCheckAuth] = useState(true);
+
+    useEffect(() => {
+        setCheckAuth(false)
+    }, []);
+
+    if (!checkAuth) {
+
+        return (
+            <>
+                <Modal
+                    open={isImageModalOpen}
+                    onCancel={handleClose}
+                    closeIcon={null}
+                    footer={null}
+                >
+                    {imageUrl ? (
+                        <img src={imageUrl} alt="Loaded from blob" style={{ maxWidth: '100%' }} />
+                    ) : (
+                        <Button
+                            danger
+                            icon={<StopOutlined />}
+                            style={{ width: '100%' }}
+                        >
+                            Không tìm thấy hình ảnh
+                        </Button>
+                    )}
+                </Modal >
+            </>
+
+        )
+    }
 }
-
 export default ImageLicenseModal

@@ -1,4 +1,5 @@
 'use client'
+import { useAppSelector } from '@/redux/store';
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button } from 'antd';
 import { FormInstance, RuleObject } from 'antd/es/form';
@@ -13,7 +14,8 @@ interface IProps {
 
 const ResetPasswordModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
     const [form] = Form.useForm()
 
     const { getData, isResetPasswordOpen, setIsResetPasswordOpen, updateUserRecord } = props
@@ -54,7 +56,7 @@ const ResetPasswordModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/admin-change-password`,
             method: "POST",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: { email: updateUserRecord.email, newPassword: data.newPassword, confirmPassword: data.confirmPassword }
         })
 
@@ -72,54 +74,62 @@ const ResetPasswordModal = (props: IProps) => {
         }
     }
 
-    return (
-        <Modal
-            title="Đặt lại mật khẩu người dùng"
-            open={isResetPasswordOpen}
-            onOk={() => form.submit()}
-            onCancel={handleClose}
-            maskClosable={false}>
+    const [checkAuth, setCheckAuth] = useState(true);
 
-            <Form
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                layout="vertical"
-                form={form}
-            >
+    useEffect(() => {
+        setCheckAuth(false)
+    }, []);
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Mật khẩu mới"
-                    name="newPassword"
-                    rules={[
-                        { required: true, message: 'Mật khẩu không được để trống!' },
-                        { validator: validatePassword }
-                    ]}
+    if (!checkAuth) {
+        return (
+            <Modal
+                title="Đặt lại mật khẩu người dùng"
+                open={isResetPasswordOpen}
+                onOk={() => form.submit()}
+                onCancel={handleClose}
+                maskClosable={false}>
+
+                <Form
+                    name="basic"
+                    initialValues={{ remember: true }}
+                    onFinish={onFinish}
+                    layout="vertical"
+                    form={form}
                 >
-                    <Input.Password placeholder="Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm cả ký tự in hoa và chữ số." />
-                </Form.Item>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Xác nhận mật khẩu"
-                    name="confirmPassword"
-                    rules={[
-                        { required: true, message: 'Xác nhận mật khẩu không được để trống!' },
-                        { validator: validatePasswordsMatch }
-                    ]}
-                >
-                    <Input.Password placeholder="Xác nhận mật khẩu" />
-                </Form.Item>
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Mật khẩu mới"
+                        name="newPassword"
+                        rules={[
+                            { required: true, message: 'Mật khẩu không được để trống!' },
+                            { validator: validatePassword }
+                        ]}
+                    >
+                        <Input.Password placeholder="Mật khẩu phải dài tối thiểu 6 kí tự, bao gồm cả ký tự in hoa và chữ số." />
+                    </Form.Item>
 
-                <Form.Item style={{ display: 'none' }}>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
-                </Form.Item>
-            </Form>
-        </Modal>
-    )
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Xác nhận mật khẩu"
+                        name="confirmPassword"
+                        rules={[
+                            { required: true, message: 'Xác nhận mật khẩu không được để trống!' },
+                            { validator: validatePasswordsMatch }
+                        ]}
+                    >
+                        <Input.Password placeholder="Xác nhận mật khẩu" />
+                    </Form.Item>
+
+                    <Form.Item style={{ display: 'none' }}>
+                        <Button type="primary" htmlType="submit">
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    }
 }
 
 export default ResetPasswordModal

@@ -1,20 +1,22 @@
 'use client'
-import { useSession } from "next-auth/react"
+import { useAppSelector } from "@/redux/store"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
 export default function AdminPage() {
 
-  const { data: session } = useSession()
+  const authInfo = useAppSelector((state) => state.auth)
+  const authState = !!authInfo.access_token
+
   const router = useRouter()
 
   useEffect(() => {
-    if (session) {
-      if (session.user.role === "T2M ADMIN") {
+    if (authState) {
+      if (authInfo.user.role === "T2M ADMIN") {
         router.push("/admin/dashboard")
       }
     }
-  }, [session])
+  }, [authState])
 
   return (
     <div></div>

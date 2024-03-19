@@ -1,4 +1,5 @@
 'use client'
+import { useAppSelector } from '@/redux/store';
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button, InputNumber } from 'antd';
 import { RuleObject } from 'antd/es/form';
@@ -13,7 +14,8 @@ interface IProps {
 
 const CreatDiscountCodeModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
 
     const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
 
@@ -24,7 +26,7 @@ const CreatDiscountCodeModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/discountcodes`,
             method: "POST",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: data
         })
 
@@ -56,58 +58,66 @@ const CreatDiscountCodeModal = (props: IProps) => {
         }
     };
 
-    return (
-        <Modal
-            title="Tạo mới mã giảm giá"
-            open={isCreateModalOpen}
-            onOk={() => form.submit()}
-            onCancel={handleClose}
-            maskClosable={false}>
+    const [checkAuth, setCheckAuth] = useState(true);
 
-            <Form
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                layout="vertical"
-                form={form}
-            >
-                {/* Dummy fields */}
-                <div style={{ display: 'none' }}>
-                    <Input name="username" type="text" autoComplete="username" />
-                    <Input name="password" type="password" autoComplete="current-password" />
-                </div>
+    useEffect(() => {
+        setCheckAuth(false)
+    }, []);
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Mã giảm giá"
-                    name="code"
-                    rules={[
-                        { required: true, message: 'Mã giảm giá không được để trống!' },
-                        { validator: validateDiscountCodeName }
-                    ]}
+    if (!checkAuth) {
+
+        return (
+            <Modal
+                title="Tạo mới mã giảm giá"
+                open={isCreateModalOpen}
+                onOk={() => form.submit()}
+                onCancel={handleClose}
+                maskClosable={false}>
+
+                <Form
+                    name="basic"
+                    initialValues={{ remember: true }}
+                    onFinish={onFinish}
+                    layout="vertical"
+                    form={form}
                 >
-                    <Input placeholder="Nhập mã giảm giá" />
-                </Form.Item>
+                    {/* Dummy fields */}
+                    <div style={{ display: 'none' }}>
+                        <Input name="username" type="text" autoComplete="username" />
+                        <Input name="password" type="password" autoComplete="current-password" />
+                    </div>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Tỉ lệ chiết khấu"
-                    name="maxDiscount"
-                    rules={[
-                        { required: true, message: 'Thời hạn không được để trống!' },
-                    ]}
-                >
-                    <Select placeholder="Chọn tỉ lệ chiết khấu tối đa cho mã">
-                        {
-                            Array.from({ length: 10 }, (_, i) => (i + 1) * 5).map(value => (
-                                <Option key={value} value={value}>{value}%</Option>
-                            ))
-                        }
-                    </Select>
-                </Form.Item>
-            </Form>
-        </Modal>
-    )
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Mã giảm giá"
+                        name="code"
+                        rules={[
+                            { required: true, message: 'Mã giảm giá không được để trống!' },
+                            { validator: validateDiscountCodeName }
+                        ]}
+                    >
+                        <Input placeholder="Nhập mã giảm giá" />
+                    </Form.Item>
+
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Tỉ lệ chiết khấu"
+                        name="maxDiscount"
+                        rules={[
+                            { required: true, message: 'Thời hạn không được để trống!' },
+                        ]}
+                    >
+                        <Select placeholder="Chọn tỉ lệ chiết khấu tối đa cho mã">
+                            {
+                                Array.from({ length: 10 }, (_, i) => (i + 1) * 5).map(value => (
+                                    <Option key={value} value={value}>{value}%</Option>
+                                ))
+                            }
+                        </Select>
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    }
 }
-
 export default CreatDiscountCodeModal

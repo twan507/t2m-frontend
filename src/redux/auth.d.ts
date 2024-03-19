@@ -1,4 +1,4 @@
-// src/features/session/sessionTypes.ts
+// src/features/authState/sessionTypes.ts
 export interface LicenseInfo {
     daysLeft: number | null;
     product: string | null;

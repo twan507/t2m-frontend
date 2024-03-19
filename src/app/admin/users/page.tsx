@@ -20,6 +20,7 @@ import ManageCTVModal from './components/manege.ctv.modal';
 import UpdateUserModal from './components/update.user.modal';
 import CreateUserModal from './components/create.user.modal';
 import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/redux/store';
 
 interface DataType {
   email: string;
@@ -36,14 +37,16 @@ type DataIndex = keyof DataType;
 
 const PageUsers: React.FC = () => {
 
-  const { data: session } = useSession()
+  const authInfo = useAppSelector((state) => state.auth)
+  const authState = !!authInfo.access_token
+
   const router = useRouter()
 
   useEffect(() => {
-    if (!session || session.user.role !== "T2M ADMIN") {
+    if (!authState || authInfo.user.role !== "T2M ADMIN") {
       router.push("/admin");
     }
-  }, [session, router]);
+  }, [authState, router]);
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -69,7 +72,7 @@ const PageUsers: React.FC = () => {
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`,
       method: "GET",
       queryParams: { current: meta.current, pageSize: meta.pageSize },
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
@@ -80,7 +83,7 @@ const PageUsers: React.FC = () => {
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`,
       method: "GET",
       queryParams: { current: current, pageSize: pageSize },
-      headers: { 'Authorization': `Bearer ${session?.access_token}` }
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` }
     })
     try { setListUsers(res.data.result) } catch (error) { }
     try { setMeta(res.data.meta) } catch (error) { }
@@ -91,7 +94,7 @@ const PageUsers: React.FC = () => {
     const res = await sendRequest<IBackendRes<any>>({
       url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${id}`,
       method: "DELETE",
-      headers: { 'Authorization': `Bearer ${session?.access_token}` },
+      headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
     })
 
     if (res.data) {
@@ -110,7 +113,7 @@ const PageUsers: React.FC = () => {
 
   useEffect(() => {
     getData()
-  }, [session])
+  }, [authState])
 
   const handleSearch = (
     selectedKeys: string[],
@@ -352,55 +355,62 @@ const PageUsers: React.FC = () => {
       }
     },
   ];
+  const [checkAuth, setCheckAuth] = useState(true);
 
-  return (
-    <>
-      <CreateUserModal
-        getData={getData}
-        isCreateModalOpen={isCreateModalOpen}
-        setIsCreateModalOpen={setIsCreateModalOpen}
-      />
+  useEffect(() => {
+    setCheckAuth(false)
+  }, []);
 
-      <UpdateUserModal
-        getData={getData}
-        isUpdateModalOpen={isUpdateModalOpen}
-        setIsUpdateModalOpen={setIsUpdateModalOpen}
-        updateUserRecord={updateUserRecord}
-      />
+  if (!checkAuth) {
+    return (
+      <>
+        <CreateUserModal
+          getData={getData}
+          isCreateModalOpen={isCreateModalOpen}
+          setIsCreateModalOpen={setIsCreateModalOpen}
+        />
 
-      <ManageCTVModal
-        getData={getData}
-        isCTVModalOpen={isCTVModalOpen}
-        setIsCTVModalOpen={setIsCTVModalOpen}
-        updateUserRecord={updateUserRecord}
-      />
+        <UpdateUserModal
+          getData={getData}
+          isUpdateModalOpen={isUpdateModalOpen}
+          setIsUpdateModalOpen={setIsUpdateModalOpen}
+          updateUserRecord={updateUserRecord}
+        />
 
-      <ResetPasswordModal
-        getData={getData}
-        isResetPasswordOpen={isResetPasswordOpen}
-        setIsResetPasswordOpen={setIsResetPasswordOpen}
-        updateUserRecord={updateUserRecord}
-      />
+        <ManageCTVModal
+          getData={getData}
+          isCTVModalOpen={isCTVModalOpen}
+          setIsCTVModalOpen={setIsCTVModalOpen}
+          updateUserRecord={updateUserRecord}
+        />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1> Danh sách Users</h1>
-        <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
-      </div>
-      <Table
-        columns={columns}
-        dataSource={listUsers}
-        rowKey={"_id"}
-        pagination={{
-          current: meta.current,
-          pageSize: meta.pageSize,
-          total: meta.total,
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-          onChange: (current: number, pageSize: number) => { handleOnChange(current, pageSize) },
-          showSizeChanger: true
-        }}
-      />
-    </>
-  )
-};
+        <ResetPasswordModal
+          getData={getData}
+          isResetPasswordOpen={isResetPasswordOpen}
+          setIsResetPasswordOpen={setIsResetPasswordOpen}
+          updateUserRecord={updateUserRecord}
+        />
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1> Danh sách Users</h1>
+          <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
+        </div>
+        <Table
+          columns={columns}
+          dataSource={listUsers}
+          rowKey={"_id"}
+          pagination={{
+            current: meta.current,
+            pageSize: meta.pageSize,
+            total: meta.total,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+            onChange: (current: number, pageSize: number) => { handleOnChange(current, pageSize) },
+            showSizeChanger: true
+          }}
+        />
+      </>
+    )
+  }
+}
 
 export default PageUsers;

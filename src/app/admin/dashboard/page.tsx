@@ -5,14 +5,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
-  const { data: session } = useSession()
+
+  const authInfo = useAppSelector((state) => state.auth)
+  const authState = !!authInfo.access_token
+
   const router = useRouter()
 
   useEffect(() => {
-    if (!session || session.user.role !== "T2M ADMIN") {
+    if (!authState || authInfo.user.role !== "T2M ADMIN") {
       router.push("/admin");
     }
-  }, [session, router]);
+  }, [authState, router]);
 
   const [checkAuth, setCheckAuth] = useState(true);
 

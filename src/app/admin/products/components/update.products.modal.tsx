@@ -1,4 +1,5 @@
 'use client'
+import { useAppSelector } from '@/redux/store';
 import { sendRequest } from '@/utlis/api';
 import { Modal, Input, notification, Form, Select, Button, InputNumber } from 'antd';
 import { RuleObject } from 'antd/es/form';
@@ -14,7 +15,8 @@ interface IProps {
 
 const UpdateProductModal = (props: IProps) => {
 
-    const { data: session } = useSession()
+    const authInfo = useAppSelector((state) => state.auth)
+    const authState = !!authInfo.access_token
 
     const { getData, isUpdateModalOpen, setIsUpdateModalOpen, updateProductRecord } = props
 
@@ -25,7 +27,7 @@ const UpdateProductModal = (props: IProps) => {
         const res = await sendRequest<IBackendRes<any>>({
             url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/products/${updateProductRecord._id}`,
             method: "PUT",
-            headers: { 'Authorization': `Bearer ${session?.access_token}` },
+            headers: { 'Authorization': `Bearer ${authInfo.access_token}` },
             body: data
         })
 
@@ -68,91 +70,98 @@ const UpdateProductModal = (props: IProps) => {
         }
     };
 
+    const [checkAuth, setCheckAuth] = useState(true);
 
-    return (
-        <Modal
-            title="Chỉnh sửa thông tin sản phẩm"
-            open={isUpdateModalOpen}
-            onOk={() => form.submit()}
-            onCancel={handleClose}
-            maskClosable={false}>
+    useEffect(() => {
+        setCheckAuth(false)
+    }, []);
 
-            <Form
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                layout="vertical"
-                form={form}
-            >
-                {/* Dummy fields */}
-                <div style={{ display: 'none' }}>
-                    <Input name="username" type="text" autoComplete="username" />
-                    <Input name="password" type="password" autoComplete="current-password" />
-                </div>
+    if (!checkAuth) {
+        return (
+            <Modal
+                title="Chỉnh sửa thông tin sản phẩm"
+                open={isUpdateModalOpen}
+                onOk={() => form.submit()}
+                onCancel={handleClose}
+                maskClosable={false}>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Tên sản phẩm"
-                    name="name"
-                    rules={[
-                        { required: true, message: 'Tên sản phẩm không được để trống!' },
-                        { validator: validateProductName }
-                    ]}
+                <Form
+                    name="basic"
+                    initialValues={{ remember: true }}
+                    onFinish={onFinish}
+                    layout="vertical"
+                    form={form}
                 >
-                    <Input placeholder="Nhập tên sản phẩm" />
-                </Form.Item>
+                    {/* Dummy fields */}
+                    <div style={{ display: 'none' }}>
+                        <Input name="username" type="text" autoComplete="username" />
+                        <Input name="password" type="password" autoComplete="current-password" />
+                    </div>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Thời hạn (Tháng)"
-                    name="monthsDuration"
-                    rules={[
-                        { required: true, message: 'Thời hạn không được để trống!' },
-                        // { validator: validateEmail }
-                    ]}
-                >
-                    <Select placeholder="Chọn thời hạn cho sản phẩm">
-                        {
-                            Array.from({ length: 24 }, (_, i) => i + 1).map(value => (
-                                <Option key={value} value={value}>{value} Tháng</Option>
-                            ))
-                        }
-                    </Select>
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Access Level"
-                    name="accessLevel"
-                    rules={[{ required: true, message: 'Access Level không được để trống!' }]}>
-                    <Select
-                        placeholder="Chọn Access Level cho sản phẩm"
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Tên sản phẩm"
+                        name="name"
+                        rules={[
+                            { required: true, message: 'Tên sản phẩm không được để trống!' },
+                            { validator: validateProductName }
+                        ]}
                     >
-                        <Option value={1}>Level 1</Option>
-                        <Option value={2}>Level 2</Option>
-                        <Option value={3}>Level 3</Option>
-                        <Option value={4}>Level 4</Option>
-                    </Select>
-                </Form.Item>
+                        <Input placeholder="Nhập tên sản phẩm" />
+                    </Form.Item>
 
-                <Form.Item
-                    style={{ marginBottom: "5px" }}
-                    label="Giá sản phẩm"
-                    name="price"
-                    rules={[
-                        { required: true, message: 'Giá sản phẩm không được để trống!' },
-                        // { validator: validateProductName }
-                    ]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={100000}
-                        step={100000}
-                        placeholder="Tối thiêu 100,000" />
-                </Form.Item>
-            </Form>
-        </Modal>
-    )
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Thời hạn (Tháng)"
+                        name="monthsDuration"
+                        rules={[
+                            { required: true, message: 'Thời hạn không được để trống!' },
+                            // { validator: validateEmail }
+                        ]}
+                    >
+                        <Select placeholder="Chọn thời hạn cho sản phẩm">
+                            {
+                                Array.from({ length: 24 }, (_, i) => i + 1).map(value => (
+                                    <Option key={value} value={value}>{value} Tháng</Option>
+                                ))
+                            }
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Access Level"
+                        name="accessLevel"
+                        rules={[{ required: true, message: 'Access Level không được để trống!' }]}>
+                        <Select
+                            placeholder="Chọn Access Level cho sản phẩm"
+                        >
+                            <Option value={1}>Level 1</Option>
+                            <Option value={2}>Level 2</Option>
+                            <Option value={3}>Level 3</Option>
+                            <Option value={4}>Level 4</Option>
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item
+                        style={{ marginBottom: "5px" }}
+                        label="Giá sản phẩm"
+                        name="price"
+                        rules={[
+                            { required: true, message: 'Giá sản phẩm không được để trống!' },
+                            // { validator: validateProductName }
+                        ]}
+                    >
+                        <InputNumber
+                            style={{ width: '100%' }}
+                            min={100000}
+                            step={100000}
+                            placeholder="Tối thiêu 100,000" />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        )
+    }
 }
 
 export default UpdateProductModal

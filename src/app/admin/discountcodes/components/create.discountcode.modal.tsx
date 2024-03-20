@@ -15,7 +15,7 @@ interface IProps {
 const CreatDiscountCodeModal = (props: IProps) => {
 
     const authInfo = useAppSelector((state) => state.auth)
-    const authState = !!authInfo.user
+    const authState = !!authInfo?.user?._id
 
     const { getData, isCreateModalOpen, setIsCreateModalOpen } = props
 

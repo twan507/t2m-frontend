@@ -17,7 +17,7 @@ const UserInfoModal = (props: IProps) => {
     const [form] = Form.useForm()
     const router = useRouter();
     const authInfo = useAppSelector((state) => state.auth)
-    const authState = !!authInfo.user
+    const authState = !!authInfo?.user?._id
 
     const { isUserInfoModal, setUserInfoModalOpen } = props
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)

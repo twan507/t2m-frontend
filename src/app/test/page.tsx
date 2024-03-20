@@ -43,7 +43,7 @@ export default function Home() {
   };
 
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.user
+  const authState = !!authInfo?.user?._id
 
   const [checkAuth, setCheckAuth] = useState(true);
 

@@ -70,7 +70,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
 
   // const { data: authInfo } = useSession()
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.user
+  const authState = !!authInfo?.user?._id
   const dispatch = useAppDispatch();
 
   const showLogout = authState ? true : false
@@ -157,7 +157,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
               flexDirection: 'column',
               position: 'sticky',
               top: 0,
-              zIndex: 1000
+              zIndex: 100
             }}>
             <Button
               type="text"
@@ -258,7 +258,7 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
                   borderBottom: '2px solid #303030',
                   position: 'sticky',
                   top: 0,
-                  zIndex: 1000
+                  zIndex: 100
                 }}
                 theme='dark'
                 mode="horizontal"

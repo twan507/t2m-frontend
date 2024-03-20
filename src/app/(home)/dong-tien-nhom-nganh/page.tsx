@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 const Page3 = () => {
 
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.user
+  const authState = !!authInfo?.user?._id
 
   const router = useRouter()
 
@@ -28,7 +28,7 @@ const Page3 = () => {
 
     if (currentWidth < iframeWidth) {
       const widthDecrease = iframeWidth - currentWidth;
-      newHeight -= widthDecrease * (iframeHeight / iframeWidth);
+      newHeight -= widthDecrease * (iframeHeight / iframeWidth  - 0.1);
     }
 
     setIframeHeight(newHeight);
@@ -71,7 +71,7 @@ const Page3 = () => {
             position: 'fixed', // Sử dụng fixed để overlay che toàn bộ nội dung
             top: 0,
             left: 0,
-            zIndex: 1000, // Đảm bảo overlay nằm trên cùng
+            zIndex: 100, // Đảm bảo overlay nằm trên cùng
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',

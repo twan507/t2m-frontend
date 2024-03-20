@@ -6,7 +6,7 @@ import { useEffect } from "react"
 export default function AdminPage() {
 
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.user
+  const authState = !!authInfo?.user?._id
 
   const router = useRouter()
 

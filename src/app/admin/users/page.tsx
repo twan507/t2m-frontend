@@ -38,7 +38,7 @@ type DataIndex = keyof DataType;
 const PageUsers: React.FC = () => {
 
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo.user
+  const authState = !!authInfo?.user?._id
 
   const router = useRouter()
 

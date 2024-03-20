@@ -171,8 +171,8 @@ const AuthSignUpModal = (props: IProps) => {
                     form={form}
                     layout='vertical'
                     style={{
-                        maxWidth: '600px',
-                        minWidth: '570px',
+                        // maxWidth: '600px',
+                        // minWidth: '570px',
                         width: '100%',
                         padding: '10px 30px 10px 30px',
                         boxSizing: 'border-box', // Đảm bảo padding và border không làm tăng kích thước tổng thể của Form
@@ -266,16 +266,15 @@ const AuthSignUpModal = (props: IProps) => {
                         <Input placeholder="Nhập mã được giới thiệu (Nếu có)" />
                     </Form.Item>
 
-                    <Form.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'middle', marginBottom: '0px' }}>
-                        <p style={{ fontSize: 13, color: '#dfdfdf' }}>
+                    <Form.Item style={{ display: 'flex', justifyContent: 'center', alignItems: 'middle', marginBottom: '0px', marginTop: '10px' }}>
+                        <p style={{ fontSize: 13, color: '#dfdfdf',fontStyle: 'italic' }}>
                             Với việc bấm đăng ký, bạn đã đọc và đồng ý với &nbsp;
                             <Typography.Link
                                 onClick={() => { }}
                                 style={{ fontSize: 14, color: '#1777ff', background: 'transparent', border: 0, padding: 0, fontStyle: 'italic' }}
                             >
-                                Điều khoản sử dụng &nbsp;
+                                Điều khoản sử dụng.
                             </Typography.Link>
-                            của T2M Invest.
                         </p>
                     </Form.Item>
 

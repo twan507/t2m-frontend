@@ -25,6 +25,7 @@ import FooterComponent from '@/components/footer/footer';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { signOut } from '@/utlis/signOut';
 import { resetAuthState } from '@/redux/authSlice';
+import { sessionLimit } from '@/utlis/sessionLimit';
 
 const { Header, Footer, Content } = Layout;
 
@@ -73,8 +74,19 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
 
   const [collapsed, setCollapsed] = useState(true);
 
+  const [limitState, setLimitState] = useState(false);
   const authInfo = useAppSelector((state) => state.auth)
-  const authState = !!authInfo?.user?._id
+  useEffect(() => {
+    const fetchSessionLimit = async () => {
+      const result = await sessionLimit(authInfo?.user?.email, authInfo?.access_token);
+      setLimitState(result);
+    }
+    fetchSessionLimit();
+  }, [authInfo?.user?.email, authInfo?.access_token]);
+  const authState = !!authInfo?.user?._id && limitState
+
+  console.log(authState)
+
   const dispatch = useAppDispatch();
 
   const showLogout = authState ? true : false
@@ -86,7 +98,7 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
 
   const toggleMobileLayout = () => {
     const currentWidth = window.innerWidth;
-    if (currentWidth > 1300) {
+    if (currentWidth > 800) {
       setmMobileLayout(false)
     } else {
       setmMobileLayout(true)
@@ -306,7 +318,7 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
               <Menu
                 style={{
                   background: '#000000',
-                  height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '1300px'
+                  height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: mobileLayout ? '100%' : '1300px'
                   // borderBottom: '2px solid #303030',
                 }}
                 theme='dark'
@@ -316,19 +328,17 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
                   // Kiểm tra điều kiện mobileLayout ngay ở đầu để quyết định phần tử hiển thị
                   ...(mobileLayout ? [
                     {
-                      // label: <a onClick={() => setCollapsed(!collapsed)} />,
                       label: <Button ghost
                         icon={collapsed ? <MenuUnfoldOutlined style={{ fontSize: '20px', padding: '0px', margin: '0px' }} /> : <MenuFoldOutlined style={{ fontSize: '20px', padding: '0px', margin: '0px' }} />}
                         onClick={() => setCollapsed(!collapsed)}
                         style={{ border: '0px', padding: '0px', margin: '0px' }}
                       />,
                       key: 'home-mobile', // Sử dụng một key khác biệt cho mobile layout
-                      // icon: collapsed ? <MenuUnfoldOutlined style={{ fontSize: '20px' }} /> : <MenuFoldOutlined style={{ fontSize: '20px' }} />
                     },
                     {
-                      label: <Link onClick={() => { window.location.href = "/" }} href='/' />,
+                      label: collapsed ? <Link onClick={() => { window.location.href = "/" }} href='/' /> : null,
                       key: 'home',
-                      icon: <img src="/photo/header-logo.png" alt="Home Icon" style={{ width: '120px', height: 'auto', paddingTop: '25px', margin: 0 }} />
+                      icon: collapsed ? <img src="/photo/text-logo.png" alt="Home Icon" style={{ width: '80px', height: '65px', paddingTop: '40px', marginBottom: '16px' }} /> : null
                     }
                   ] : [
                     {
@@ -338,31 +348,31 @@ const Homelayout = ({ children }: React.PropsWithChildren) => {
                     }]),
                   ...(!authState ? [
                     {
-                      label: <Button ghost type='primary' onClick={() => setSignInModalOpen(true)}
-                        icon={mobileLayout ? <UserOutlined /> : null}
-                        style={{
-                          width: mobileLayout ? '40px' : '120px',
-                          marginLeft: mobileLayout ? 'calc(100vw - 400px)' : '790px',
-                          fontWeight: 'bold',
-                          fontFamily: 'Helvetica Neue, sans-serif'
-                        }}
-                      >
-                        {mobileLayout ? "" : "Đăng nhập"}
-                      </Button>,
+                      label: mobileLayout && !collapsed ? null :
+                        <Button ghost type='primary' onClick={() => setSignInModalOpen(true)}
+                          icon={mobileLayout ? <UserOutlined /> : null}
+                          style={{
+                            width: mobileLayout ? '40px' : '120px',
+                            marginLeft: mobileLayout ? 'calc(100vw - 320px)' : '790px',
+                            fontWeight: 'bold',
+                            fontFamily: 'Helvetica Neue, sans-serif'
+                          }}>
+                          {mobileLayout ? "" : "Đăng nhập"}
+                        </Button>,
                       key: 'signin',
                     },
                     {
-                      label: <Button type='primary' onClick={() => setSignUpModalOpen(true)}
-                        icon={mobileLayout ? <UsergroupAddOutlined /> : null}
-                        style={{
-                          width: mobileLayout ? '40px' : '120px',
-                          marginLeft: '-20px',
-                          fontWeight: 'bold',
-                          fontFamily: 'Helvetica Neue, sans-serif'
-                        }}
-                      >
-                        {mobileLayout ? "" : "Đăng ký"}
-                      </Button>,
+                      label: mobileLayout && !collapsed ? null :
+                        <Button type='primary' onClick={() => setSignUpModalOpen(true)}
+                          icon={mobileLayout ? <UsergroupAddOutlined /> : null}
+                          style={{
+                            width: mobileLayout ? '40px' : '120px',
+                            marginLeft: '-20px',
+                            fontWeight: 'bold',
+                            fontFamily: 'Helvetica Neue, sans-serif'
+                          }}>
+                          {mobileLayout ? "" : "Đăng ký"}
+                        </Button>,
                       key: 'signup',
                     }
                   ] : []),

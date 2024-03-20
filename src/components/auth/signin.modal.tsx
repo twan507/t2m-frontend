@@ -162,7 +162,7 @@ const AuthSignInModal = (props: IProps) => {
                             }}
                             onClick={() => setSignInModalOpen(false)}
                         >
-                            Sử dụng phiên bản miễn phí
+                            Dùng thử miễn phí
                         </Button>
                     </Form.Item>
 

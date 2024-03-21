@@ -62,7 +62,7 @@ const PageUsers: React.FC = () => {
 
   const [meta, setMeta] = useState({
     current: 1,
-    pageSize: 8,
+    pageSize: 10,
     pages: 0,
     total: 0,
   })
@@ -395,7 +395,18 @@ const PageUsers: React.FC = () => {
           <h1> Danh sách Users</h1>
           <Button icon={<PlusCircleOutlined />} onClick={() => setIsCreateModalOpen(true)} type={'primary'} style={{ fontSize: 16, height: 'auto' }}>Tạo mới</Button>
         </div>
+
+        <style>
+          {`
+          .custom-table .ant-table-thead > tr > th,
+          .custom-table .ant-table-tbody > tr > td {
+            padding: 7px; /* Giảm giá trị padding để các hàng gần nhau hơn */
+          }
+        `}
+        </style>
+
         <Table
+          className="custom-table"
           columns={columns}
           dataSource={listUsers}
           rowKey={"_id"}

@@ -250,7 +250,12 @@ const AdminLayout = ({ children }: React.PropsWithChildren) => {
             </div>
           </Sider>
           <Layout style={{ background: '#0a0a0a' }}>
-            <Header style={{ margin: '0px', padding: '0px', height: '60px' }}>
+            <Header style={{
+              margin: '0px', padding: '0px', height: '60px',
+              position: 'sticky', background: '#000000', borderBottom: '2px solid #303030',
+              top: 0,
+              zIndex: 101
+            }}>
               <Menu
                 style={{
                   background: '#0a0a0a',
